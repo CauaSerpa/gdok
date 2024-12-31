@@ -1,0 +1,13 @@
+.env
+.env.gdok
+app.zip
+vendor/
+new-vendors-backup/
+*.html
+todo
+files/profile/avatar/*
+files/profile/documents/*
+files/
+node_modules/
+vendor/
+README.dev.md
