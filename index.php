@@ -17,12 +17,24 @@
         // Conta quantas barras existem na URL
         $slashCount = substr_count($url, '/');
 
-        if ($slashCount == 1) {
-            // Há apenas uma barra na URL
-            list($url, $token) = explode('/', $url, 2);
-        } elseif ($slashCount > 1) {
-            // Há mais de uma barra na URL
-            list($tab, $url, $token) = explode('/', $url, 3);
+        if (strpos($url, 'auth/') !== false) {
+            // Caso a URL contenha "auth"
+            if ($slashCount == 1) {
+                // Há apenas uma barra na URL
+                list($tab, $url) = explode('/', $url, 2);
+            } elseif ($slashCount > 1) {
+                // Há mais de uma barra na URL
+                list($tab, $url, $token) = explode('/', $url, 3);
+            }
+        } else {
+            // Caso a URL não contenha "auth"
+            if ($slashCount == 1) {
+                // Há apenas uma barra na URL
+                list($url, $token) = explode('/', $url, 2);
+            } elseif ($slashCount > 1) {
+                // Há mais de uma barra na URL
+                list($tab, $url, $token) = explode('/', $url, 3);
+            }
         }
     }
 ?>
@@ -80,7 +92,7 @@
 
     </head>
 
-    <body <?= ($tab !== "auth" || $url !== "auth") ? 'data-menu-color="light" data-sidebar="default"' : 'class="bg-primary-subtle"'; ?>>
+    <body <?= ($tab == "auth" || $url == "auth") ? 'class="bg-primary-subtle"' : 'data-menu-color="light" data-sidebar="default"'; ?>>
 
         <?php
             // Se for a página de verificação de e-mail
