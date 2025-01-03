@@ -63,7 +63,7 @@
 
                                 <div class="form-group mb-3">
                                     <label for="phone" class="form-label">Telefone</label>
-                                    <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite seu E-mail" onkeyup="handlePhone(event)" required>
+                                    <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite seu Telefone" onkeyup="handlePhone(event)" required>
                                 </div>
 
                                 <div class="form-group mb-3">
