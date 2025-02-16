@@ -32,10 +32,36 @@
     if ($stmt->rowCount()) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $stmt = $conn->prepare("
+            SELECT o.*, oa.id AS office_address_id, oa.*, ou.role
+            FROM tb_users u
+            JOIN tb_office_users ou ON ou.user_id = u.id
+            JOIN tb_offices o ON o.id = ou.office_id
+            JOIN tb_office_addresses oa ON o.id = oa.office_id AND type = 'headquarters'
+            WHERE u.id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$_SESSION['user_id']]);
+        $office = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$office) {
+            session_destroy();
+            session_start();
+            $_SESSION['msg'] = array('status' => 'error', 'alert' => 'danger', 'title' => 'Erro', 'message' => 'Por favor finalize seu cadastro para acessar essa página.');
+            header('Location: ' . INCLUDE_PATH_AUTH);
+            exit;
+        }
+
+        $user['profile_image'] = isset($user['profile_image']) || !empty($user['profile_image']) ? $user['profile_image'] : INCLUDE_PATH_DASHBOARD . "assets/images/profile-image/no-image.svg";
+
         // Define variáveis ​​com nomes diferentes
         $user['fullname'] = $user['firstname'] . " " . $user['lastname'];
         $user['surname'] = explode(' ', $user['lastname'])[0];
         $user['shortname'] = $user['firstname'] . " " . $user['surname'];
+    } else {
+        session_destroy();
+        header('Location: ' . INCLUDE_PATH_AUTH);
+        exit;
     }
 ?>
 

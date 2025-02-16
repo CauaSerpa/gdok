@@ -7,7 +7,7 @@ Website: https://zoyothemes.com/
 Contact: zoyothemes@gmail.com
 File: Main Css File
 */
-@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 /*!
  * Bootstrap  v5.3.3 (https://getbootstrap.com/)
  * Copyright 2011-2024 The Bootstrap Authors
@@ -80,7 +80,7 @@ File: Main Css File
   --bs-dark-border-subtle: #adb5bd;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
-  --bs-font-sans-serif: "Public Sans", sans-serif;
+  --bs-font-sans-serif: "Roboto", sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -2586,6 +2586,7 @@ span.select2-container--default span.select2-selection--single {
   border-radius: 0.325rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   height: 38.03px;
+  outline: none;
 }
 .select2-container--default .select2-search--dropdown input.select2-search__field {
   display: block;
@@ -4285,6 +4286,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     padding: 0;
     overflow-y: visible;
   }
+  .navbar-expand-sm .offcanvas .offcanvas-footer {
+    display: none;
+  }
 }
 @media (min-width: 768px) {
   .navbar-expand-md {
@@ -4331,6 +4335,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     flex-grow: 0;
     padding: 0;
     overflow-y: visible;
+  }
+  .navbar-expand-md .offcanvas .offcanvas-footer {
+    display: none;
   }
 }
 @media (min-width: 992px) {
@@ -4379,6 +4386,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     padding: 0;
     overflow-y: visible;
   }
+  .navbar-expand-lg .offcanvas .offcanvas-footer {
+    display: none;
+  }
 }
 @media (min-width: 1200px) {
   .navbar-expand-xl {
@@ -4425,6 +4435,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     flex-grow: 0;
     padding: 0;
     overflow-y: visible;
+  }
+  .navbar-expand-xl .offcanvas .offcanvas-footer {
+    display: none;
   }
 }
 @media (min-width: 1400px) {
@@ -4473,6 +4486,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     padding: 0;
     overflow-y: visible;
   }
+  .navbar-expand-xxl .offcanvas .offcanvas-footer {
+    display: none;
+  }
 }
 .navbar-expand {
   flex-wrap: nowrap;
@@ -4518,6 +4534,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
   flex-grow: 0;
   padding: 0;
   overflow-y: visible;
+}
+.navbar-expand .offcanvas .offcanvas-footer {
+  display: none;
 }
 
 .navbar-dark,
@@ -6545,6 +6564,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     overflow-y: visible;
     background-color: transparent !important;
   }
+  .offcanvas-sm .offcanvas-footer {
+    display: none;
+  }
 }
 
 @media (max-width: 767.98px) {
@@ -6632,6 +6654,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     padding: 0;
     overflow-y: visible;
     background-color: transparent !important;
+  }
+  .offcanvas-md .offcanvas-footer {
+    display: none;
   }
 }
 
@@ -6721,6 +6746,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     overflow-y: visible;
     background-color: transparent !important;
   }
+  .offcanvas-lg .offcanvas-footer {
+    display: none;
+  }
 }
 
 @media (max-width: 1199.98px) {
@@ -6808,6 +6836,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     padding: 0;
     overflow-y: visible;
     background-color: transparent !important;
+  }
+  .offcanvas-xl .offcanvas-footer {
+    display: none;
   }
 }
 
@@ -6897,6 +6928,9 @@ span.select2-container--default span.select2-selection--single span.select2-sele
     overflow-y: visible;
     background-color: transparent !important;
   }
+  .offcanvas-xxl .offcanvas-footer {
+    display: none;
+  }
 }
 
 .offcanvas {
@@ -6980,6 +7014,11 @@ span.select2-container--default span.select2-selection--single span.select2-sele
 .offcanvas-header .btn-close {
   padding: calc(var(--bs-offcanvas-padding-y) * 0.5) calc(var(--bs-offcanvas-padding-x) * 0.5);
   margin: calc(-0.5 * var(--bs-offcanvas-padding-y)) calc(-0.5 * var(--bs-offcanvas-padding-x)) calc(-0.5 * var(--bs-offcanvas-padding-y)) auto;
+}
+.offcanvas-footer {
+  display: flex;
+  align-items: center;
+  padding: var(--bs-offcanvas-padding-y) var(--bs-offcanvas-padding-x);
 }
 
 .offcanvas-title {
@@ -8841,6 +8880,11 @@ span.select2-container--default span.select2-selection--single span.select2-sele
 }
 
 /* rtl:end:remove */
+.text-inherit {
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-heading-color), var(--bs-text-opacity)) !important;
+}
+
 .text-primary {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
@@ -15689,13 +15733,13 @@ body.loading {
 .jvm-tooltip {
   border-radius: 3px;
   background-color: #287F71;
-  font-family: "Public Sans", sans-serif;
+  font-family: "Roboto", sans-serif;
   box-shadow: none;
   padding: 5px 9px;
 }
 
 .jvm-container text {
-  font-family: "Public Sans", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 0.765625rem;
   box-shadow: none;
   fill: #287F71;

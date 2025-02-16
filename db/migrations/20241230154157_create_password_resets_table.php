@@ -24,13 +24,14 @@ final class CreatePasswordResetsTable extends AbstractMigration
     public function up()
     {
         $table = $this->table('tb_password_resets', ['id' => false, 'primary_key' => 'token']);
-        $table->addColumn('token', 'string', ['limit' => 255, 'null' => false])
-              ->addColumn('email', 'string', ['limit' => 255, 'null' => false])
-              ->addColumn('expiration_date', 'datetime', ['null' => false])
-              ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
-              ->addIndex(['token'], ['unique' => true])
-              ->addIndex(['email'])
-              ->create();
+        $table
+            ->addColumn('token', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('email', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('expiration_date', 'datetime', ['null' => false])
+            ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
+            ->addIndex(['token'], ['unique' => true])
+            ->addIndex(['email'])
+            ->create();
     }
 
     /**

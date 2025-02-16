@@ -1,3 +1,21 @@
+<?php
+    if (isset($_SESSION['finalize_registration_user_id']) && !empty($_SESSION['finalize_registration_user_id'])) {
+        // Consulta no banco de dados
+        $stmt = $conn->prepare("SELECT * FROM tb_users WHERE id = ? AND active_status = 0");
+        $stmt->execute([$_SESSION['finalize_registration_user_id']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Verifica se o e-mail foi ativado
+        if (!$user) {
+            header('Location: ' . INCLUDE_PATH_DASHBOARD);
+            exit;
+        }
+    } else {
+        header('Location: ' . INCLUDE_PATH_DASHBOARD);
+        exit;
+    }
+?>
+
 <div class="col-md-5">
     <div class="row">
         <div class="col-md-8 mx-auto">
@@ -26,7 +44,7 @@
                         </div>
 
                         <div class="text-center">
-                            <a href="<?= INCLUDE_PATH_DASHBOARD; ?>" class="btn btn-link mt-0">Pular Etapa</a>
+                            <a href="<?= INCLUDE_PATH_AUTH; ?>tipo-de-usuario" class="btn btn-link mt-0">Pular Etapa</a>
                         </div>
 
                         <div class="text-center pt-4">

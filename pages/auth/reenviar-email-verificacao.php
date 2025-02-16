@@ -3,16 +3,21 @@
         return bin2hex(random_bytes($length));
     }
 
+    // Variáveis de sessão
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : (isset($_SESSION['finalize_registration_user_id']) ? $_SESSION['finalize_registration_user_id'] : null); // ID do usuário
+    $email = isset($_SESSION['email']) ? $_SESSION['email'] : (isset($_SESSION['finalize_registration_email']) ? $_SESSION['finalize_registration_email'] : null); // E-mail do usuário
+
     // Verifique se o usuário está logado e se a variável session existe
-    if (!isset($_SESSION['user_id']) || !isset($_SESSION['email'])) {
-        $_SESSION['msg'] = "Você precisa estar logado para reenviar o e-mail de confirmação.";
-        header("Location: " . INCLUDE_PATH_DASHBOARD . "login.php");
+    if (empty($user_id) && empty($email)) {
+        $_SESSION['msg'] = array('status' => 'error', 'alert' => 'danger', 'title' => 'Erro', 'message' => 'Você precisa estar logado para reenviar o e-mail de confirmação.');
+        header("Location: " . INCLUDE_PATH_AUTH);
         exit();
     }
 
-    // Variáveis de sessão
-    $user_id = $_SESSION['user_id']; // ID do usuário
-    $email = $_SESSION['email']; // E-mail do usuário
+    // Consulta o usuário pelo e-mail
+    $stmt = $conn->prepare("SELECT id, firstname FROM tb_users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Gerar um novo token para o e-mail de confirmação
     $active_token = generateToken();
@@ -29,11 +34,11 @@
         $subject = "Bem-vindo ao " . $project['name'];
         $content = array(
             "layout" => "verify-email", 
-            "content" => array("name" => $name, "link" => $verification_link)
+            "content" => array("firstname" => $user['firstname'], "link" => $verification_link)
         );
 
         // Função para enviar e-mail (você deve ter implementado a função sendMail)
-        sendMail($name, $email, $subject, $content);
+        sendMail($user['firstname'], $email, $subject, $content);
 
         $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Sucesso', 'message' => 'O e-mail de confirmação foi reenviado com sucesso. Verifique sua caixa de entrada!');
     } else {

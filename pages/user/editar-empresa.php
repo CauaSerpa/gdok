@@ -81,20 +81,20 @@
 
                             <div class="col-md-6">
 
-                                <!-- Responsável -->
+                                <!-- CPF/CNPJ -->
                                 <div class="mb-3">
-                                    <label for="responsible" class="form-label">Responsável</label>
-                                    <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" value="<?= $company['responsible']; ?>" required>
+                                    <label for="document" class="form-label">CPF/CNPJ</label>
+                                    <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" value="<?= $company['document']; ?>" onkeyup="handleCpfCnpj(event)" required>
                                 </div>
 
                             </div>
 
                             <div class="col-md-6">
 
-                                <!-- CPF/CNPJ -->
+                                <!-- Responsável -->
                                 <div class="mb-3">
-                                    <label for="document" class="form-label">CPF/CNPJ</label>
-                                    <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" value="<?= $company['document']; ?>" onkeyup="handleCpfCnpj(event)" required>
+                                    <label for="responsible" class="form-label">Responsável</label>
+                                    <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" value="<?= $company['responsible']; ?>" required>
                                 </div>
 
                             </div>
@@ -109,6 +109,19 @@
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Telefone</label>
                                     <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite o Telefone" value="<?= $company['phone']; ?>" onkeyup="handlePhone(event)" required>
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" name="notify_phone" type="checkbox" role="switch" id="notify_phone" value="1" <?php if ($company['notify_phone']) echo 'checked'; ?>>
+                                        <label class="form-check-label" for="notify_phone">
+                                            Notificar cliente via WhatsApp  
+                                            <i class="mdi mdi-help-circle text-muted" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                data-bs-title="O cliente receberá um aviso no WhatsApp sobre o vencimento dos documentos.">
+                                            </i>
+                                        </label>
+                                    </div>
+
                                 </div>
 
                             </div>
@@ -119,6 +132,19 @@
                                 <div class="mb-3">
                                     <label for="email" class="form-label">E-mail</label>
                                     <input class="form-control" name="email" type="email" id="email" maxlength="120" placeholder="Digite o E-mail" value="<?= $company['email']; ?>" required>
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" name="notify_email" type="checkbox" role="switch" id="notify_email" value="1" <?php if ($company['notify_email']) echo 'checked'; ?>>
+                                        <label class="form-check-label" for="notify_email">
+                                            Notificar cliente via e-mail  
+                                            <i class="mdi mdi-help-circle text-muted" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                data-bs-title="O cliente receberá um aviso por e-mail sobre o vencimento dos documentos.">
+                                            </i>
+                                        </label>
+                                    </div>
+
                                 </div>
 
                             </div>
@@ -204,8 +230,7 @@
                     url: `<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/delete-company.php?id=${elementIdToDelete}`,
                     type: 'DELETE',
                     success: function (response) {
-                        const data = JSON.parse(response);
-                        window.location.href = '<?= INCLUDE_PATH_AUTH; ?>empresas';
+                        window.location.href = '<?= INCLUDE_PATH_DASHBOARD; ?>empresas';
                     },
                     error: function (xhr, status, error) {
                         console.error('Erro:', error);
@@ -376,9 +401,9 @@ $(document).ready(function() {
         let isValid = false;
         if (value) {
             $.ajax({
-                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/forms-validations/document-exists.php", // URL do script PHP que verifica o e-mail no banco de dados
+                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/forms-validations/document-exists.php",
                 type: "POST",
-                data: { action: 'document-exists', document: value },
+                data: { action: 'document-exists', document: value, company_id: <?= $company_id; ?> },
                 async: false, // Sincronizar para garantir a validação antes de prosseguir
                 success: function(response) {
                     isValid = response.status === "available"; // Verifica se o e-mail está disponível

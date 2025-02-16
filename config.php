@@ -46,6 +46,10 @@
     // Tamanho maximo de arquivo
 	$max_file_size = $_ENV['MAX_FILE_SIZE'];
 
+    // Evolution
+	$config['evolution_url'] = $_ENV['EVOLUTION_URL'];
+	$config['evolution_instance'] = $_ENV['EVOLUTION_INSTANCE'];
+	$config['evolution_apikey'] = $_ENV['EVOLUTION_APIKEY'];
 
 
     // Incluir codigo de funcionalidades

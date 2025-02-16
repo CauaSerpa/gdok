@@ -9,7 +9,9 @@
             $user_id = $_SESSION['user_id'];
             $name = $_POST['name'];
             $phone = $_POST['phone'];
+            $notify_phone = isset($_POST['notify_phone']) ? 1 : 0;
             $email = $_POST['email'];
+            $notify_email = isset($_POST['notify_email']) ? 1 : 0;
             $responsible = $_POST['responsible'];
             $document = $_POST['document'];
             $uf = $_POST['uf'];
@@ -25,14 +27,17 @@
                 $conn->beginTransaction();
 
                 // Inserir dados da empresa
-                $stmt = $conn->prepare("INSERT INTO tb_companies (user_id, name, phone, email, responsible, document, uf, cidade) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$user_id, $name, $phone, $email, $responsible, $document, $uf, $cidade]);
+                $stmt = $conn->prepare("INSERT INTO tb_companies (user_id, name, phone, notify_phone, email, notify_email, responsible, document, uf, cidade) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$user_id, $name, $phone, $notify_phone, $email, $notify_email, $responsible, $document, $uf, $cidade]);
 
                 // Commit na transação
                 $conn->commit();
 
                 // Retorna um status de sucesso
                 echo json_encode(['status' => 'success', 'message' => 'Empresa registrada com sucesso.']);
+
+                $message = array('status' => 'success', 'alert' => 'primary', 'title' => 'Sucesso', 'message' => 'Empresa registrada com sucesso.');
+                $_SESSION['msg'] = $message;
 
             } catch (Exception $e) {
                 // Rollback em caso de erro

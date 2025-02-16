@@ -24,6 +24,17 @@ if ($user) {
     $update_stmt->bindParam(':user_id', $user['id']);
 
     if ($update_stmt->execute()) {
+        // Verifica se existe a sessão de finalize_registration_user_id e finalize_registration_email
+        if (isset($_SESSION['finalize_registration_user_id']) && isset($_SESSION['finalize_registration_email'])) {
+            // Transfere para as variáveis de sessão principais
+            $_SESSION['user_id'] = $_SESSION['finalize_registration_user_id'];
+            $_SESSION['email'] = $_SESSION['finalize_registration_email'];
+
+            // Remove as sessões de finalize_registration_user_id e finalize_registration_email
+            unset($_SESSION['finalize_registration_user_id']);
+            unset($_SESSION['finalize_registration_email']);
+        }
+
         // Defina a sessão com a mensagem de sucesso
         $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Sucesso', 'message' => 'Conta ativada com sucesso! Você já pode acessar o painel.');
 

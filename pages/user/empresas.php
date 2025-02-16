@@ -7,6 +7,40 @@
     }
 </style>
 
+<!-- Offcanvas de Filtro -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filterOffcanvasLabel">Filtros</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="filterForm">
+            <!-- Filtro de Empresa -->
+            <div class="mb-3">
+                <label for="companyFilter" class="form-label">Empresa</label>
+                <input type="text" id="companyFilter" class="form-control" placeholder="Digite a empresa">
+            </div>
+            <!-- Filtro de Responsável -->
+            <div class="mb-3">
+                <label for="responsibleFilter" class="form-label">Responsável</label>
+                <input type="text" id="responsibleFilter" class="form-control" placeholder="Digite o responsável">
+            </div>
+            <!-- Filtro de CPF/CNPJ -->
+            <div class="mb-3">
+                <label for="documentFilter" class="form-label">CPF/CNPJ</label>
+                <input type="text" id="documentFilter" class="form-control" placeholder="Digite o CPF ou CNPJ" onkeyup="handleCpfCnpj(event)">
+            </div>
+        </form>
+    </div>
+    <div class="offcanvas-footer d-flex align-items-center justify-content-between">
+        <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas" aria-label="Close">Voltar</button>
+        <div>
+            <button id="clearFiltersButton" type="button" class="btn btn-link d-none">Limpar Filtros</button>
+            <button id="applyFiltersButton" type="button" class="btn btn-primary">Aplicar Filtros</button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Confirmação -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -44,7 +78,18 @@
         <div class="card overflow-hidden mb-0">
             <div class="card-header">
                 <div class="d-flex align-items-center">
-                    <h5 class="card-title text-black mb-0">Empresas Registradas</h5>
+                    <h5 class="card-title text-black mb-0">Empresas cadastradas</h5>
+                    <div class="ms-auto">
+                        <button class="btn btn-sm bg-light border dropdown-toggle fw-medium text-black" type="button" data-bs-toggle="offcanvas" href="#filterOffcanvas" role="button" aria-controls="filterOffcanvas">
+                            <i class="mdi mdi-filter-outline me-1 fs-14"></i>Filtrar Empresas</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="active-filters mt-3 d-none">
+                    <h6 class="text-uppercase fs-13">Filtros</h6>
+
+                    <div id="filterList" class="d-flex flex-wrap gap-2"></div>
+
                 </div>
             </div>
 
@@ -52,15 +97,11 @@
                 <table id="companiesTable" class="table table-traffic mb-0">
                     <thead>
                         <tr>
-                            <th>ID da Empresa</th>
                             <th>Nome da Empresa</th>
                             <th>Telefone</th>
                             <th>E-mail</th>
                             <th>Responsável</th>
                             <th>CPF/CNPJ</th>
-                            <th>Estado (UF)</th>
-                            <th>Cidade</th>
-                            <th>Cadastrado Em</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -94,6 +135,23 @@
     </div>
 </div>
 
+<!-- Adicionar máscaras e validação -->
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+
+<script>
+    function handleCpfCnpj(event) {
+        var input = event.target;
+        var value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+        if (value.length <= 11) {
+            $(input).mask('000.000.000-00#####');
+        } else {
+            $(input).mask('00.000.000/0000-00');
+        }
+    }
+</script>
 <script>
     $(document).ready(function () {
         let elementIdToDelete = null;
@@ -129,37 +187,43 @@
         });
     });
 </script>
-
 <script>
     $(document).ready(function () {
-        // Inicializa o DataTables com configuração básica
+        // Inicializa o DataTable
         const table = $('#companiesTable').DataTable({
             processing: true,
             serverSide: true,
             searching: false,
             ordering: true,
-            paging: true, // Desabilita a paginação interna do DataTable
+            paging: true,
             ajax: {
-                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/list-companies.php', // URL para carregar os dados
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/list-companies.php',
                 type: 'GET',
+                data: function (d) {
+                    // Adiciona os filtros à requisição
+                    d.companyFilter = $('#companyFilter').val();
+                    d.responsibleFilter = $('#responsibleFilter').val();
+                    d.documentFilter = $('#documentFilter').val();
+                },
                 dataSrc: function (json) {
                     return json.data;
                 },
             },
             columns: [
-                { data: 'id' },
                 { data: 'name' },
                 { data: 'phone' },
                 { data: 'email' },
                 { data: 'responsible' },
                 { data: 'document' },
-                { data: 'uf' },
-                { data: 'cidade' },
-                { data: 'created_at' },
-                { data: 'actions', orderable: false, searchable: false },
+                {
+                    data: 'actions',
+                    orderable: false,
+                    searchable: false,
+                    width: '10%'
+                },
             ],
             language: {
-                emptyTable: "Nenhum dado disponível na tabela", // Tradução personalizada para "No data available in table"
+                emptyTable: "Nenhum dado disponível na tabela",
                 info: "Mostrando _START_ até _END_ de _TOTAL_ registros",
                 infoEmpty: "Mostrando 0 até 0 de 0 registros",
                 infoFiltered: "(filtrado de _MAX_ registros no total)",
@@ -169,9 +233,113 @@
                 search: "Buscar:",
                 zeroRecords: "Nenhum registro encontrado",
             },
-            pageLength: 10,  // Define a quantidade de registros por página
-            lengthChange: false,  // Desabilita a opção de mudar a quantidade de registros por página
-            info: false,  // Exibe a quantidade de registros exibidos e o total
+            pageLength: 10,
+            lengthChange: false,
+            info: false,
+        });
+
+        // Limpar filtros ao clicar no botão "Limpar Filtros"
+        $('#clearFiltersButton').on('click', function () {
+            // Limpar os valores dos filtros
+            $('#filterForm')[0].reset();
+
+            // Remover filtros aplicados da listagem
+            $('#filterList').empty();
+
+            // Atualizar a tabela com os filtros limpos
+            table.draw();
+
+            // Ocultar o título "Filtros" se não houver filtros aplicados
+            $('.active-filters').addClass('d-none');
+            $('#clearFiltersButton').addClass('d-none');
+
+            // Fechar o offcanvas
+            $('#filterOffcanvas').offcanvas('hide');
+        });
+
+        // Capturar o evento de clique do botão "Aplicar Filtros"
+        $('#applyFiltersButton').on('click', function () {
+            // Função para formatar a data no padrão DD/MM/YYYY
+            function formatDateToBR(date) {
+                if (!date) return ''; // Verifica se a data é válida
+                const [year, month, day] = date.split('-'); // Divide a data no formato ISO (YYYY-MM-DD)
+                return `${day}/${month}/${year}`; // Retorna no formato DD/MM/YYYY
+            }
+
+            // Capturar os valores do formulário
+            const companyFilterVal = $('#companyFilter').val();
+            const responsibleFilterVal = $('#responsibleFilter').val();
+            const documentFilterVal = $('#documentFilter').val();
+
+            // Adicionar filtros aplicados na listagem
+            $('#filterList').empty();
+
+            if (companyFilterVal) {
+                $('#filterList').append(`
+                    <span class="bg-light border rounded dropdown-toggle fw-medium text-black d-flex align-items-center fs-12 py-1 px-2">
+                        ${companyFilterVal}
+                        <button type="button" class="remove-filter btn btn-sm btn-light lh-1 p-1 ms-1 d-flex align-items-center" data-filter="company">
+                            <i class="mdi mdi-close fs-11 align-middle"></i>
+                        </button>
+                    </span>
+                `);
+            }
+            if (responsibleFilterVal) {
+                $('#filterList').append(`
+                    <span class="bg-light border rounded dropdown-toggle fw-medium text-black d-flex align-items-center fs-12 py-1 px-2">
+                        ${responsibleFilterVal}
+                        <button type="button" class="remove-filter btn btn-sm btn-light lh-1 p-1 ms-1 d-flex align-items-center" data-filter="responsible">
+                            <i class="mdi mdi-close fs-11 align-middle"></i>
+                        </button>
+                    </span>
+                `);
+            }
+            if (documentFilterVal) {
+                $('#filterList').append(`
+                    <span class="bg-light border rounded dropdown-toggle fw-medium text-black d-flex align-items-center fs-12 py-1 px-2">
+                        ${documentFilterVal}
+                        <button type="button" class="remove-filter btn btn-sm btn-light lh-1 p-1 ms-1 d-flex align-items-center" data-filter="document">
+                            <i class="mdi mdi-close fs-11 align-middle"></i>
+                        </button>
+                    </span>
+                `);
+            }
+
+            // Verificar se existem filtros aplicados e mostrar ou ocultar o título "Filtros"
+            if ($('#filterList').children().length > 0) {
+                $('.active-filters').removeClass('d-none');
+                $('#clearFiltersButton').removeClass('d-none');
+            } else {
+                $('.active-filters').addClass('d-none');
+                $('#clearFiltersButton').addClass('d-none');
+            }
+
+            // Atualizar a tabela com os filtros
+            table.draw();
+
+            // Fechar o offcanvas
+            $('#filterOffcanvas').offcanvas('hide');
+        });
+
+        // Remover filtros aplicados
+        $('#filterList').on('click', '.remove-filter', function () {
+            const filterType = $(this).data('filter');
+            
+            // Remover o filtro
+            $(`#${filterType}Filter`).val(null).trigger('change');
+
+            // Remover o item do filtro da listagem
+            $(this).closest('span').remove();
+
+            // Atualizar a tabela com os filtros
+            table.draw();
+
+            // Verificar se existem filtros aplicados e mostrar ou ocultar o título "Filtros"
+            if ($('#filterList').children().length === 0) {
+                $('.active-filters').addClass('d-none');
+                $('#clearFiltersButton').addClass('d-none');
+            }
+
         });
 
         // Custom pagination control

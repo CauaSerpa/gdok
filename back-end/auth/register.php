@@ -57,8 +57,8 @@
             sendMail($firstname, $email, $subject, $content);
 
             // Armazena o informacoes em uma session
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['email'] = $email;
+            $_SESSION['finalize_registration_user_id'] = $user_id;
+            $_SESSION['finalize_registration_email'] = $email;
 
             // Commit na transação
             $conn->commit();

@@ -69,15 +69,15 @@
                     <img src='" . INCLUDE_PATH_DASHBOARD . "assets/images/logo-light.png' class='logo'>
                 </div>
                 <div class='email-body'>
-                    <h2>Olá " . $content['content']['firstname'] . ",</h2>
-                    <p>Bem-vindo(a) à " . $project['name'] . "! Para completar o processo de registro e ativar sua conta, por favor, clique no botão abaixo para confirmar seu e-mail:</p>
-                    <a href='" . $content['content']['link'] . "' class='button'>Ativar Conta</a>
+                    <h2>Olá " . htmlspecialchars($content['content']['firstname'], ENT_QUOTES, 'UTF-8') . ",</h2>
+                    <p>Bem-vindo(a) à " . htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') . "! Para completar o processo de registro e ativar sua conta, por favor, clique no botão abaixo para confirmar seu e-mail:</p>
+                    <a href='" . htmlspecialchars($content['content']['link'], ENT_QUOTES, 'UTF-8') . "' class='button'>Ativar Conta</a>
                     <p>Obrigado por se juntar a nós!</p>
                     <small>Se você não se registrou em nosso site, por favor, ignore este e-mail.</small>
                 </div>
                 <div class='email-footer'>
                     <p>Este é um e-mail automático. Por favor, não responda.</p>
-                    <p>Direitos autorais &copy; " . $project['name'] . " " . date('Y') . "</p>
+                    <p>Direitos autorais &copy; " . htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') . " " . date('Y') . "</p>
                 </div>
             </div>
         </body>

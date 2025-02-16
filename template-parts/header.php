@@ -28,134 +28,92 @@
                     </button>
                 </li>
 
+                <?php
+                    // Data atual
+                    $currentDate = date('Y-m-d');
+
+                    // Query para buscar documentos próximos do vencimento
+                    $sql = "
+                        SELECT 
+                            d.id,
+                            d.name,
+                            d.expiration_date,
+                            d.advance_notification,
+                            d.personalized_advance_notification,
+                            u.firstname AS user_name,
+                            CASE
+                                WHEN d.personalized_advance_notification IS NOT NULL THEN d.personalized_advance_notification
+                                ELSE d.advance_notification
+                            END AS notification_days
+                        FROM tb_documents d
+                        INNER JOIN tb_users u ON u.id = d.user_id -- Supondo que há uma tabela de usuários
+                        WHERE d.user_id = :user_id AND DATE_SUB(d.expiration_date, INTERVAL 
+                            CASE
+                                WHEN d.personalized_advance_notification IS NOT NULL THEN d.personalized_advance_notification
+                                ELSE d.advance_notification
+                            END DAY) <= :currentDate
+                    ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute(['currentDate' => $currentDate, 'user_id' => $_SESSION['user_id']]);
+
+                    // Obter os resultados
+                    $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+
                 <li class="dropdown notification-list topbar-dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <i data-feather="bell" class="noti-icon"></i>
-                        <span class="badge bg-danger rounded-circle noti-icon-badge">9</span>
+                        <span class="badge bg-danger rounded-circle noti-icon-badge"><?= count($notifications); ?></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-lg">
-
-                        <!-- item-->
-                        <div class="dropdown-item noti-title">
-                            <h5 class="m-0">
-                                <span class="float-end">
-                                    <a href="" class="text-dark">
-                                        <small>Clear All</small>
-                                    </a>
-                                </span>Notification
-                            </h5>
-                        </div>
-
+                        <div class="dropdown-item noti-title"><h5 class="m-0">Notificações</h5></div>
                         <div class="noti-scroll" data-simplebar>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary active">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-12.jpg" class="img-fluid rounded-circle" alt="" />
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <p class="notify-details">Carl Steadham</p>
-                                    <small class="text-muted">5 min ago</small>
-                                </div>
-                                <p class="mb-0 user-msg">
-                                    <small class="fs-14">Completed <span class="text-reset">Improve workflow in Figma</span></small>
-                                </p>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-2.jpg" class="img-fluid rounded-circle" alt="" />
-                                </div>
-                                <div class="notify-content">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <p class="notify-details">Olivia McGuire</p>
-                                        <small class="text-muted">1 min ago</small>
+                            <?php foreach ($notifications as $notification) : ?>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD ?>editar-documento/<?= $notification['id']; ?>" class="dropdown-item notify-item text-muted link-primary">
+                                    <div class="notify-icon text-inherit rounded-circle border border-dashed border-warning d-flex align-items-center justify-content-center me-2" style="height: 35px; width: 35px;">
+                                        <i class="mdi mdi-file-alert-outline fs-17 text-warning"></i>
                                     </div>
-                        
-                                    <div class="d-flex mt-2 align-items-center">
-                                        <div class="notify-sub-icon">
-                                            <i class="mdi mdi-download-box text-dark"></i>
+                                    <div class="notify-content">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <p class="notify-details fw-bold text-dark">Aviso: Documento Próximo ao Vencimento</p>
+                                            <!-- <small class="text-muted"><?= htmlspecialchars(date('d/m/Y H:i', strtotime($notification['created_at'] ?? 'now'))); ?></small> -->
                                         </div>
-
-                                        <div>
-                                            <p class="notify-details mb-0">dark-themes.zip</p>
-                                            <small class="text-muted">2.4 MB</small>
-                                        </div>
+                                        <p class="noti-mentioned p-2 rounded-2 mb-0 mt-2">
+                                            <span class="text-reset fw-bold"><?= htmlspecialchars($notification['name']) ?></span><br>
+                                            Data de Vencimento: <span class="<?= $notification['expiration_date'] > $currentDate ? 'text-inherit' : 'text-danger'; ?>"><?= htmlspecialchars(date('d/m/Y', strtotime($notification['expiration_date']))); ?></span><br>
+                                            Status: <?= $notification['expiration_date'] > $currentDate ? '<span class="badge bg-success">Ativo</span>' : '<span class="badge bg-danger">Inativo</span>'; ?>
+                                        </p>
+                                        <p class="mb-0 text-muted small">
+                                            Configurado para <?= $notification['advance_notification'] == "personalized" ? $notification['personalized_advance_notification'] : $notification['advance_notification']; ?> dia(s) antes do vencimento.
+                                        </p>
                                     </div>
+                                </a>
+                            <?php endforeach; ?>
 
-                                </div>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-3.jpg" class="img-fluid rounded-circle" alt="" /> 
+                            <!-- Notificação de criação de conta -->
+                            <div class="dropdown-item notify-item text-muted">
+                                <div class="notify-icon text-inherit rounded-circle border border-dashed d-flex align-items-center justify-content-center me-2" style="height: 35px; width: 35px;">
+                                    <i class="mdi mdi-account-outline fs-17"></i>
                                 </div>
                                 <div class="notify-content">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <p class="notify-details">Travis Williams</p>
-                                        <small class="text-muted">7 min ago</small>
-                                    </div>
-                                    <p class="noti-mentioned p-2 rounded-2 mb-0 mt-2"><span class="text-primary">@Patryk</span> Please make sure that you're....</p>
+                                    <p class="notify-details fw-bold text-dark">Usuário <?= htmlspecialchars($user['shortname']); ?> Criado</p>
+                                    <p class="noti-mentioned p-2 rounded-2 mb-0 mt-2 text-wrap">
+                                        Olá, <span class="text-reset fw-bold"><?= htmlspecialchars($user['firstname']); ?></span>! Sua conta foi criada com sucesso no dia <?= htmlspecialchars(date('d/m/Y', strtotime($user['created_at']))); ?>.
+                                    </p>
                                 </div>
-                            </a>
+                            </div>
 
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-8.jpg" class="img-fluid rounded-circle" alt="" />
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <p class="notify-details">Violette Lasky</p>
-                                    <small class="text-muted">5 min ago</small>
-                                </div>
-                                <p class="mb-0 user-msg">
-                                    <small class="fs-14">Completed <span class="text-reset">Create new components</span></small>
-                                </p>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-5.jpg" class="img-fluid rounded-circle" alt="" />
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <p class="notify-details">Ralph Edwards</p>
-                                    <small class="text-muted">5 min ago</small>
-                                </div>
-                                <p class="mb-0 user-msg">
-                                    <small class="fs-14">Completed <span class="text-reset">Improve workflow in React</span></small>
-                                </p>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item text-muted link-primary">
-                                <div class="notify-icon">
-                                    <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-6.jpg" class="img-fluid rounded-circle" alt="" /> 
-                                </div>
-                                <div class="notify-content">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <p class="notify-details">Jocab jones</p>
-                                        <small class="text-muted">7 min ago</small>
-                                    </div>
-                                    <p class="noti-mentioned p-2 rounded-2 mb-0 mt-2"><span class="text-reset">@Patryk</span> Please make sure that you're....</p>
-                                </div>
-                            </a>
                         </div>
-
-                        <!-- All-->
-                        <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
-                            View all
-                            <i class="fe-arrow-right"></i>
+                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>notificacoes" class="dropdown-item text-center text-primary notify-item notify-all">
+                            Ver todas <i class="fe-arrow-right"></i>
                         </a>
-
                     </div>
                 </li>
 
                 <li class="dropdown notification-list topbar-dropdown">
                     <a class="nav-link dropdown-toggle nav-user me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/users/user-5.jpg" alt="user-image" class="rounded-circle">
+                        <img src="<?= $user['profile_image']; ?>" alt="user-image" class="rounded-circle">
                         <span class="pro-user-name ms-1">
                             <?= $user['shortname'] ?> <i class="mdi mdi-chevron-down"></i> 
                         </span>
@@ -167,7 +125,7 @@
                         </div>
 
                         <!-- item-->
-                        <a href="#" class="dropdown-item notify-item">
+                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>configuracoes" class="dropdown-item notify-item">
                             <i class="mdi mdi-account-circle-outline fs-16 align-middle"></i>
                             <span>Minha Conta</span>
                         </a>

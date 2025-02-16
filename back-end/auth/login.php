@@ -17,7 +17,14 @@
         }
 
         // Consulta no banco de dados
-        $stmt = $conn->prepare("SELECT * FROM tb_users WHERE email = ?");
+        $stmt = $conn->prepare("
+            SELECT u.*, o.id AS office_id
+            FROM tb_users u
+            LEFT JOIN tb_office_users ou ON ou.user_id = u.id
+            LEFT JOIN tb_offices o ON o.id = ou.office_id
+            WHERE u.email = ?
+            LIMIT 1
+        ");
         $stmt->execute([$email]);
 
         // Usando fetch para obter o resultado
@@ -25,23 +32,8 @@
 
         if ($user && password_verify($password, $user['password'])) {
             // Se a ativação foi feita, salva o usuário na sessão
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-
-            // Lógica de "lembrar de mim"
-            if ($remember) {
-                // Cria um array com o user_id
-                $data = array('remember_me' => $user['id']);
-
-                // Codifica o array em JSON
-                $jsonData = json_encode($data);
-
-                // Codifica o JSON em Base64
-                $base64Data = base64_encode($jsonData);
-
-                // Define o cookie
-                setcookie("remember_me", $base64Data, time() + (86400 * 30), "/"); // Cookie válido por 30 dias
-            }
+            $_SESSION['finalize_registration_user_id'] = $user['id'];
+            $_SESSION['finalize_registration_email'] = $user['email'];
 
             // Verifica se o e-mail foi ativado
             if ($user['active_status'] == 0) {
@@ -49,7 +41,33 @@
                 $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Erro', 'message' => 'Por favor, verifique seu e-mail para ativar sua conta.', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email');
                 echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email']);
                 exit();
+            } else if (!isset($user['office_id']) && empty($user['office_id'])) { // Verifica se o usuário está associado a uma empresa
+                // Nao esta associado a nenhuma empresa, redireciona para página de tipo de usuario
+                $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Erro', 'message' => 'Por favor, finalize seu cadastro para acessar o ' . $project['name'] . '.', 'redirect' => INCLUDE_PATH_AUTH . 'tipo-de-usuario');
+                echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'tipo-de-usuario']);
+                exit();
             } else {
+                unset($_SESSION['finalize_registration_user_id']);
+                unset($_SESSION['finalize_registration_email']);
+
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['email'] = $user['email'];
+
+                // Lógica de "lembrar de mim"
+                if ($remember) {
+                    // Cria um array com o user_id
+                    $data = array('remember_me' => $user['id']);
+
+                    // Codifica o array em JSON
+                    $jsonData = json_encode($data);
+
+                    // Codifica o JSON em Base64
+                    $base64Data = base64_encode($jsonData);
+
+                    // Define o cookie
+                    setcookie("remember_me", $base64Data, time() + (86400 * 30), "/"); // Cookie válido por 30 dias
+                }
+
                 // Retorna um status de sucesso
                 echo json_encode(['status' => 'success']);
                 exit();

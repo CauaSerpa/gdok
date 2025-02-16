@@ -38,12 +38,37 @@
         }
     }
 ?>
+
+<?php
+    if (isset($_SESSION['user_id'])) {
+        // Contar numero de notificacoes
+        // Data atual
+        $currentDate = date('Y-m-d');
+
+        // Query para buscar documentos próximos do vencimento
+        $sql = "
+            SELECT COUNT(d.id) AS count
+            FROM tb_documents d
+            INNER JOIN tb_users u ON u.id = d.user_id -- Supondo que há uma tabela de usuários
+            WHERE d.user_id = :user_id AND DATE_SUB(d.expiration_date, INTERVAL 
+                CASE
+                    WHEN d.personalized_advance_notification IS NOT NULL THEN d.personalized_advance_notification
+                    ELSE d.advance_notification
+                END DAY) <= :currentDate
+        ";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['currentDate' => $currentDate, 'user_id' => $_SESSION['user_id']]);
+
+        // Obter os resultados
+        $notifications = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    }
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
 
         <meta charset="utf-8" />
-        <title>GDok - <?= $title; ?></title>
+        <title><?= (isset($notifications) && $notifications > 0) ? '(' . $notifications .  ') ' : ''; ?>GDok - <?= $title; ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Gestão de documentos."/>
         <meta name="author" content="GDok"/>
@@ -55,6 +80,9 @@
         <!-- App css -->
         <link href="<?= INCLUDE_PATH_DASHBOARD; ?>assets/css/app.css" rel="stylesheet" type="text/css" id="app-style" />
         <!-- <link href="<?= INCLUDE_PATH_DASHBOARD; ?>assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" /> -->
+
+        <!-- Flatpickr Timepicker css -->
+        <link href="<?= INCLUDE_PATH_DASHBOARD; ?>assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" type="text/css" />
 
         <!-- Icons -->
         <link href="<?= INCLUDE_PATH_DASHBOARD; ?>assets/css/icons.min.css" rel="stylesheet" type="text/css" />
@@ -167,6 +195,10 @@
         <!-- Datatable Demo App Js -->
         <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/pages/datatable.init.js"></script>
 
+        <!-- Flatpickr Timepicker Plugin js -->
+        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/libs/flatpickr/flatpickr.min.js"></script>
+
+        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/pages/form-picker.js"></script>
 
         <!-- App js-->
         <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/app.js"></script>

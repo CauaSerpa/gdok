@@ -44,8 +44,58 @@
                     </a>
                 </li>
 
-                <li class="menu-title mt-2">Sair</li>
-    
+                <li>
+                    <a href="#sidebarDocuments" data-bs-toggle="collapse">
+                        <i data-feather="file-text"></i>
+                        <span> Documentos </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarDocuments">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-documento" class="tp-link">Upload Manual</a>
+                            </li>
+                            <hr style="margin: .5rem 1.25rem;">
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>documentos" class="tp-link">Documentos</a>
+                            </li>
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>tipos-documentos" class="tp-link">Tipos de Documentos</a>
+                            </li>
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>categorias" class="tp-link">Categorias</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="#sidebarOffice" data-bs-toggle="collapse">
+                        <i data-feather="printer"></i>
+                        <span> Escritório </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarOffice">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>escritorio" class="tp-link">Escritório</a>
+                            </li>
+                            <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>parametrizar-notificacoes" class="tp-link">Notificações</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="menu-title mt-2">Conta</li>
+
+                <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>configuracoes" class="tp-link">
+                        <i data-feather="settings"></i>
+                        <span> Configurações </span>
+                    </a>
+                </li>
+
                 <li>
                     <a href="<?= INCLUDE_PATH_AUTH; ?>sair" class="tp-link">
                         <i data-feather="log-out"></i>

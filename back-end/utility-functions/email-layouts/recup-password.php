@@ -69,15 +69,15 @@
                     <img src='" . INCLUDE_PATH_DASHBOARD . "assets/images/logo-light.png' class='logo'>
                 </div>
                 <div class='email-body'>
-                    <h2>Olá " . $content['content']['firstname'] . ",</h2>
-                    <p>Recebemos uma solicitação para a recuperação da sua senha em " . $project['name'] . ".</p>
+                    <h2>Olá " . htmlspecialchars($content['content']['firstname'], ENT_QUOTES, 'UTF-8') . ",</h2>
+                    <p>Recebemos uma solicitação para a recuperação da sua senha em " . htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') . ".</p>
                     <p>Para prosseguir, por favor, clique no botão abaixo para redefinir sua senha:</p>
-                    <a href='" . $content['content']['link'] . "' class='button'>Redefinir Senha</a>
+                    <a href='" . htmlspecialchars($content['content']['link'], ENT_QUOTES, 'UTF-8') . "' class='button'>Redefinir Senha</a>
                     <p>Se você não fez essa solicitação, por favor, ignore este e-mail.</p>
                 </div>
                 <div class='email-footer'>
                     <p>Este é um e-mail automático. Por favor, não responda.</p>
-                    <p>Direitos autorais &copy; " . $project['name'] . " " . date('Y') . "</p>
+                    <p>Direitos autorais &copy; " . htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') . " " . date('Y') . "</p>
                 </div>
             </div>
         </body>

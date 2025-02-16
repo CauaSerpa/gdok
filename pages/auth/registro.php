@@ -36,7 +36,7 @@
                                 </a>
                             </div>
                         </div>
-                        
+
                         <div class="saprator my-4"><span>ou continue com o E-mail</span></div>
 
                         <div class="pt-0">
@@ -75,7 +75,7 @@
                                     <label for="password" class="form-label">Senha</label>
                                     <input class="form-control" name="password" type="password" id="password" placeholder="Digite sua Senha" required>
                                 </div>
-    
+
                                 <div class="form-group d-flex mb-3">
                                     <div class="col-12">
                                         <div class="form-check">
@@ -84,7 +84,7 @@
                                         </div>
                                     </div><!--end col-->
                                 </div>
-                                
+
                                 <div class="form-group mb-0 row">
                                     <div class="col-12">
                                         <div class="d-grid">

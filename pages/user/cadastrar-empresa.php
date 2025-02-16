@@ -34,20 +34,20 @@
 
                             <div class="col-md-6">
 
-                                <!-- Responsável -->
+                                <!-- CPF/CNPJ -->
                                 <div class="mb-3">
-                                    <label for="responsible" class="form-label">Responsável</label>
-                                    <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" required>
+                                    <label for="document" class="form-label">CPF/CNPJ</label>
+                                    <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" onkeyup="handleCpfCnpj(event)" required>
                                 </div>
 
                             </div>
 
                             <div class="col-md-6">
 
-                                <!-- CPF/CNPJ -->
+                                <!-- Responsável -->
                                 <div class="mb-3">
-                                    <label for="document" class="form-label">CPF/CNPJ</label>
-                                    <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" onkeyup="handleCpfCnpj(event)" required>
+                                    <label for="responsible" class="form-label">Responsável</label>
+                                    <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" required>
                                 </div>
 
                             </div>
@@ -62,6 +62,19 @@
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Telefone</label>
                                     <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite o Telefone" onkeyup="handlePhone(event)" required>
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" name="notify_phone" type="checkbox" role="switch" id="notify_phone">
+                                        <label class="form-check-label" for="notify_phone">
+                                            Notificar cliente via WhatsApp  
+                                            <i class="mdi mdi-help-circle text-muted" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                data-bs-title="O cliente receberá um aviso no WhatsApp sobre o vencimento dos documentos.">
+                                            </i>
+                                        </label>
+                                    </div>
+
                                 </div>
 
                             </div>
@@ -72,6 +85,19 @@
                                 <div class="mb-3">
                                     <label for="email" class="form-label">E-mail</label>
                                     <input class="form-control" name="email" type="email" id="email" maxlength="120" placeholder="Digite o E-mail" required>
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" name="notify_email" type="checkbox" role="switch" id="notify_email">
+                                        <label class="form-check-label" for="notify_email">
+                                            Notificar cliente via e-mail  
+                                            <i class="mdi mdi-help-circle text-muted" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                data-bs-title="O cliente receberá um aviso por e-mail sobre o vencimento dos documentos.">
+                                            </i>
+                                        </label>
+                                    </div>
+
                                 </div>
 
                             </div>
@@ -229,31 +255,11 @@ $(document).ready(function() {
     });
 
     // Adicionar validação personalizada para o e-mail
-    $.validator.addMethod("emailExists", function(value, element) {
-        let isValid = false;
-        if (value) {
-            $.ajax({
-                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/forms-validations/email-exists.php", // URL do script PHP que verifica o e-mail no banco de dados
-                type: "POST",
-                data: { action: 'email-exists', email: value },
-                async: false, // Sincronizar para garantir a validação antes de prosseguir
-                success: function(response) {
-                    isValid = response.status === "available"; // Verifica se o e-mail está disponível
-                },
-                error: function() {
-                    isValid = false;
-                }
-            });
-        }
-        return isValid;
-    }, "Este e-mail já está cadastrado.");
-
-    // Adicionar validação personalizada para o e-mail
     $.validator.addMethod("documentExists", function(value, element) {
         let isValid = false;
         if (value) {
             $.ajax({
-                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/forms-validations/document-exists.php", // URL do script PHP que verifica o e-mail no banco de dados
+                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/forms-validations/document-exists.php", // URL do script PHP que verifica o e-mail no banco de dados
                 type: "POST",
                 data: { action: 'document-exists', document: value },
                 async: false, // Sincronizar para garantir a validação antes de prosseguir

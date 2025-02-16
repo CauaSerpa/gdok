@@ -10,7 +10,9 @@
             $company_id = $_POST['company_id'];
             $name = $_POST['name'];
             $phone = $_POST['phone'];
+            $notify_phone = isset($_POST['notify_phone']) ? 1 : 0;
             $email = $_POST['email'];
+            $notify_email = isset($_POST['notify_email']) ? 1 : 0;
             $responsible = $_POST['responsible'];
             $document = $_POST['document'];
             $uf = $_POST['uf'];
@@ -26,10 +28,10 @@
 
                 $stmt = $conn->prepare("
                     UPDATE tb_companies SET
-                    name = ?, phone = ?, email = ?, responsible = ?, document = ?, uf = ?, cidade = ?
+                    name = ?, phone = ?, notify_phone = ?, email = ?, notify_email = ?, responsible = ?, document = ?, uf = ?, cidade = ?
                     WHERE id = ? AND user_id = ?
                 ");
-                $stmt->execute([$name, $phone, $email, $responsible, $document, $uf, $cidade, $company_id, $_SESSION['user_id']]);
+                $stmt->execute([$name, $phone, $notify_phone, $email, $notify_email, $responsible, $document, $uf, $cidade, $company_id, $_SESSION['user_id']]);
 
                 // Commit na transação
                 $conn->commit();
@@ -43,10 +45,10 @@
                 $conn->rollBack();
 
                 // Registrar erro em um log
-                error_log("Erro ao registrar a empresa: " . $e->getMessage());
+                error_log("Erro ao atualizar a empresa: " . $e->getMessage());
 
                 // Mensagem genérica para o usuário
-                echo json_encode(['status' => 'error', 'message' => 'Erro ao registrar a empresa', 'error' => $e->getMessage()]);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao atualizar a empresa', 'error' => $e->getMessage()]);
                 exit;
             }
         } else {
