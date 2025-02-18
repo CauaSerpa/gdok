@@ -98,6 +98,72 @@
     </div>
 </div>
 
+<!-- Modal para informar renovação -->
+<div class="modal fade" id="renewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renewModalLabel">Renovar Documento<span id="documentId"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="informRenewal" class="d-none">
+                    <h6 class="fs-15">Como deseja continuar?</h6>
+                    <div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="option_renew" id="option_renew_1" value="no_renewal">
+                            <label class="form-check-label" for="option_renew_1">
+                                Documento não será renovado
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="option_renew" id="option_renew_2" value="renew_later">
+                            <label class="form-check-label" for="option_renew_2">
+                                Documento a ser renovado
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="option_renew" id="option_renew_3" value="renew_with_new">
+                            <label class="form-check-label" for="option_renew_3">
+                                Documento renovado, informar novo vencimento
+                            </label>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="renewForm">
+                    <!-- Novo Documento -->
+                    <div class="mb-3">
+                        <label for="document" class="form-label">Novo Documento</label>
+                        <input class="form-control" name="document" type="file" id="document" accept=".jpg,.png,.pdf,.doc,.docx,.xls,.xlsx,.pfx,.p12">
+                    </div>
+
+                    <!-- Nova Data de Validade -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div>
+                                <label for="expiration_date" class="form-label">Nova Data de Validade</label>
+                                <input class="form-control" name="expiration_date" type="date" id="expiration_date">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex aling-items-center justify-content-between">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                <div>
+                    <button class="btn btn-primary" id="btnNextStep" type="submit">Continuar</button>
+                    <button class="btn btn-primary d-none" id="btnSubmit" type="submit">Salvar</button>
+                    <button class="btn btn-primary loader-btn d-none" id="btnLoader" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span role="status">Carregando...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
     <div class="flex-grow-1">
         <h4 class="fs-18 fw-semibold m-0">Documento</h4>
@@ -290,6 +356,154 @@
 
 <script>
     $(document).ready(function () {
+        let elementIdToRenew = null;
+
+        // Quando clicar no botão de exclusão
+        $(document).on('click', '.btn-renew', function () {
+            $(".alert").remove();
+            $('#informRenewal').removeClass('d-none'); // Mostra campos
+            $('#renewForm').addClass('d-none'); // Ocultar opcoes
+            $("#btnNextStep").removeClass("d-none");
+            $("#btnSubmit").addClass("d-none");
+            $('#renewForm')[0].reset();
+            $('#informRenewal')[0].reset();
+
+            elementIdToRenew = $(this).data('id'); // Obtém o ID do elemento a ser excluído
+            const elementNameToRenew = $(this).data('name'); // Obtém o nome do elemento a ser excluído
+            if (elementIdToRenew || elementIdToRenew.trim() !== "") {
+                $('#documentId').text(' #'+elementIdToRenew+''); // Mostra o modal
+            }
+            if (elementNameToRenew || elementNameToRenew.trim() !== "") {
+                $('#documentName').text(' "'+elementNameToRenew+'"'); // Mostra o modal
+            }
+            $('#renewModal').modal('show'); // Mostra o modal
+        });
+
+        $('#expiration_date').on('change', function() {
+            $('#expirationDateError').remove();
+        });
+
+        $("#btnSubmit").click(function () {
+            var btnSubmit = $("#btnSubmit");
+            var btnLoader = $("#btnLoader");
+
+            btnSubmit.prop("disabled", true).addClass("d-none");
+            btnLoader.removeClass("d-none");
+
+            let expirationDate = $("#expiration_date").val(); // Obtém a nova data de validade
+
+            // Verifica se o campo de validade está vazio
+            if (!expirationDate) {
+                // Remove o erro se os campos forem corrigidos
+                $('#expirationDateError').remove();
+                $('<div id="expirationDateError" class="invalid-feedback">Por favor, preencha a nova data de validade antes de continuar</div>')
+                    .insertAfter('#expiration_date').show(); // Adiciona a mensagem de erro após o campo de data de término
+
+                btnSubmit.prop("disabled", false).removeClass("d-none");
+                btnLoader.addClass("d-none");
+                return;
+            }
+
+            var form = $('#renewForm')[0];
+            var formData = new FormData(form);
+
+            formData.append('document_id', elementIdToRenew);
+            formData.append('action', 'renew-with-new');
+
+            // Enviar AJAX confirmando que o documento não será renovado
+            $.ajax({
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/document/renew.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.status === "success") {
+                        window.location.href = "<?= INCLUDE_PATH_DASHBOARD; ?>documentos";
+                    } else {
+                        $(".alert").remove();
+                        $("#informRenewal").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    }
+                    btnSubmit.prop("disabled", false).removeClass("d-none");
+                    btnLoader.addClass("d-none");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Erro no AJAX:", status, error);
+
+                    $(".alert").remove();
+                    $("#informRenewal").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">Ocorreu um erro, tente novamente mais tarde.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                    btnSubmit.prop("disabled", false).removeClass("d-none");
+                    btnLoader.addClass("d-none");
+                }
+            });
+        });
+
+        let selectedOption = "";
+
+        // Monitora a seleção do usuário e altera a interface conforme a opção escolhida
+        $("input[name='option_renew']").change(function () {
+            selectedOption = $(this).val();
+        });
+
+        // Ação ao clicar no botão "Continuar"
+        $("#btnNextStep").click(function () {
+            if (selectedOption === "no_renewal") {
+                var btnSubmit = $("#btnNextStep");
+                var btnLoader = $("#btnLoader");
+
+                btnSubmit.prop("disabled", true).addClass("d-none");
+                btnLoader.removeClass("d-none");
+
+                ajaxData = {
+                    'document_id': elementIdToRenew,
+                    'action': 'no-renewal'
+                };
+
+                // Enviar AJAX confirmando que o documento não será renovado
+                $.ajax({
+                    url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/document/renew.php',
+                    type: 'POST',
+                    data: ajaxData,
+                    success: function (response) {
+                        if (response.status === "success") {
+                            window.location.href = "<?= INCLUDE_PATH_DASHBOARD; ?>documentos";
+                        } else {
+                            $(".alert").remove();
+                            $("#informRenewal").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                        }
+                        btnSubmit.prop("disabled", false).removeClass("d-none");
+                        btnLoader.addClass("d-none");
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Erro no AJAX:", status, error);
+
+                        $(".alert").remove();
+                        $("#informRenewal").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">Ocorreu um erro, tente novamente mais tarde.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                        btnSubmit.prop("disabled", false).removeClass("d-none");
+                        btnLoader.addClass("d-none");
+                    }
+                });
+            } else if (selectedOption === "renew_with_new") {
+                // Caso o usuário vá enviar um novo documento, valida os campos antes de enviar
+                $('#informRenewal').addClass('d-none'); // Mostra campos
+                $("#renewForm").removeClass("d-none");
+                $("#btnNextStep").addClass("d-none");
+                $("#btnSubmit").removeClass("d-none");
+            } else if (selectedOption === "renew_later") {
+                // Apenas fecha o modal
+                $("#renewModal").modal("hide");
+            } else {
+                $(".alert").remove();
+                $("#informRenewal").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">Por favor, selecione uma opção antes de continuar.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
         const table = $('#documentsTable').DataTable({
             processing: true,
             serverSide: true,
@@ -310,7 +524,7 @@
                 },
             },
             columns: [
-                { data: 'company', width: '20%' },
+                { data: 'company', width: '15%' },
                 { data: 'document_type', width: '15%' },
                 { data: 'document', width: '10%' },
                 { data: 'expiration_date', width: '15%' },
@@ -329,7 +543,7 @@
                     className: 'text-center',
                     orderable: false,
                     searchable: false,
-                    width: '10%'
+                    width: '15%'
                 },
             ],
             language: {

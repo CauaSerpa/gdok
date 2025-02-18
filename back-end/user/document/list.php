@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                   FROM tb_documents d
                   LEFT JOIN tb_companies c ON d.company_id = c.id
                   LEFT JOIN tb_document_types t ON d.document_type_id = t.id
-                  WHERE d.user_id = :user_id";
+                  WHERE d.user_id = :user_id AND status = 1";
 
         if ($company_id) {
             $query .= " AND d.company_id = :company_id";
@@ -170,7 +170,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
             $status = $texts[$key];
 
-            $actions = '<a href="' . INCLUDE_PATH_DASHBOARD . 'editar-documento/' . $row['id'] . '" class="btn btn-sm bg-primary-subtle me-1" data-bs-toggle="tooltip" title="Edit">
+            $actions = '<button class="btn btn-sm bg-info-subtle fs-14 me-1 btn-renew" data-bs-toggle="tooltip" title="Informar Renovação" data-id="' . $row['id'] . '" data-name="' . $row['name'] . '">Informar Renovação</button>
+                        <a href="' . INCLUDE_PATH_DASHBOARD . 'editar-documento/' . $row['id'] . '" class="btn btn-sm bg-primary-subtle me-1" data-bs-toggle="tooltip" title="Edit">
                             <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
                         </a>
                         <button type="button" class="btn btn-sm bg-danger-subtle btn-delete" data-bs-toggle="tooltip" title="Delete" data-id="' . $row['id'] . '" data-name="document">

@@ -188,7 +188,7 @@
 
                         <div class="d-flex align-items-center justify-content-between">
 
-                            <a href="<?= INCLUDE_PATH_DASHBOARD; ?>tipos-documentos" class="btn btn-light">Voltar</a>
+                            <a href="<?= INCLUDE_PATH_DASHBOARD; ?>documentos" class="btn btn-light">Voltar</a>
 
                             <div>
 
