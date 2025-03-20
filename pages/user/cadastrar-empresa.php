@@ -21,136 +21,221 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-
                     <form id="companyForm">
-
-                        <!-- Name -->
+                        <!-- Nome da Empresa -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nome da Empresa</label>
+                            <label for="name" class="form-label">Nome da Empresa*</label>
                             <input class="form-control" name="name" type="text" id="name" maxlength="120" placeholder="Digite o Nome da Empresa" required>
                         </div>
 
                         <div class="row">
-
                             <div class="col-md-6">
-
                                 <!-- CPF/CNPJ -->
                                 <div class="mb-3">
-                                    <label for="document" class="form-label">CPF/CNPJ</label>
+                                    <label for="document" class="form-label">CPF/CNPJ*</label>
                                     <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" onkeyup="handleCpfCnpj(event)" required>
                                 </div>
-
                             </div>
-
                             <div class="col-md-6">
-
                                 <!-- Responsável -->
                                 <div class="mb-3">
-                                    <label for="responsible" class="form-label">Responsável</label>
+                                    <label for="responsible" class="form-label">Responsável*</label>
                                     <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" required>
                                 </div>
-
                             </div>
-
                         </div>
 
                         <div class="row">
-
                             <div class="col-md-5">
-
-                                <!-- Phone -->
+                                <!-- Telefone -->
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">Telefone</label>
+                                    <label for="phone" class="form-label">Telefone*</label>
                                     <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite o Telefone" onkeyup="handlePhone(event)" required>
-
-                                    <div class="form-check form-switch">
+                                    <div class="form-check form-switch mt-2">
                                         <input class="form-check-input" name="notify_phone" type="checkbox" role="switch" id="notify_phone">
                                         <label class="form-check-label" for="notify_phone">
                                             Notificar cliente via WhatsApp  
                                             <i class="mdi mdi-help-circle text-muted" 
-                                                data-bs-toggle="tooltip" 
-                                                data-bs-placement="top" 
-                                                data-bs-title="O cliente receberá um aviso no WhatsApp sobre o vencimento dos documentos.">
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            data-bs-title="O cliente receberá um aviso no WhatsApp sobre o vencimento dos documentos.">
                                             </i>
                                         </label>
                                     </div>
-
                                 </div>
-
                             </div>
 
                             <div class="col-md-7">
-
-                                <!-- Email -->
+                                <!-- E-mail -->
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">E-mail</label>
+                                    <label for="email" class="form-label">E-mail*</label>
                                     <input class="form-control" name="email" type="email" id="email" maxlength="120" placeholder="Digite o E-mail" required>
-
-                                    <div class="form-check form-switch">
+                                    <div class="form-check form-switch mt-2">
                                         <input class="form-check-input" name="notify_email" type="checkbox" role="switch" id="notify_email">
                                         <label class="form-check-label" for="notify_email">
                                             Notificar cliente via e-mail  
                                             <i class="mdi mdi-help-circle text-muted" 
-                                                data-bs-toggle="tooltip" 
-                                                data-bs-placement="top" 
-                                                data-bs-title="O cliente receberá um aviso por e-mail sobre o vencimento dos documentos.">
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            data-bs-title="O cliente receberá um aviso por e-mail sobre o vencimento dos documentos.">
                                             </i>
                                         </label>
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
 
                         <div class="row">
-
                             <div class="col-md-6">
-
-                                <!-- UF -->
+                                <!-- Estado (UF) -->
                                 <div class="mb-3">
-                                    <label for="uf" class="form-label">Estado (UF)</label>
+                                    <label for="uf" class="form-label">Estado (UF)*</label>
                                     <select class="form-select" name="uf" id="uf" required>
                                         <option value="" selected disabled>Selecione um estado</option>
                                     </select>
                                 </div>
-
                             </div>
-
                             <div class="col-md-6">
-
                                 <!-- Cidade -->
                                 <div class="mb-3">
-                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <label for="cidade" class="form-label">Cidade*</label>
                                     <select class="form-select" name="cidade" id="cidade" required>
                                         <option value="" selected disabled>Selecione uma cidade</option>
                                     </select>
                                 </div>
-
                             </div>
+                        </div>
 
+                        <hr>
+
+                        <h3 class="fs-16 text-dark fw-semibold mb-3 text-capitalize">Envios</h3>
+
+                        <!-- Seção para Habilitar canais de envio -->
+                        <div class="mb-3">
+                            <label class="form-label">Habilitar envio por:</label>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="email" id="channelEmail" name="channels[]">
+                                <label class="form-check-label" for="channelEmail">
+                                    E-mail
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="whatsapp" id="channelWhatsApp" name="channels[]">
+                                <label class="form-check-label" for="channelWhatsApp">
+                                    WhatsApp
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="portal" id="channelPortal" name="channels[]">
+                                <label class="form-check-label" for="channelPortal">
+                                    Portal
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Detalhes de cada canal selecionado -->
+                        <div id="channelDetails">
+                            <div class="row">
+                                <!-- E-mail -->
+                                <div class="col-md-6 mb-3 channel-detail" data-channel="email" style="display: none;">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="useSameEmailEnvios" name="use_same_email_envios" checked>
+                                        <label class="form-check-label" for="useSameEmailEnvios">
+                                            Usar e-mail de vencimentos para envios
+                                        </label>
+                                    </div>
+                                    <div class="mb-3" id="differentEmailField" style="display: none;">
+                                        <label for="emailEnvios" class="form-label">E-mail para envios</label>
+                                        <input type="email" class="form-control" id="emailEnvios" name="email_envios" placeholder="Digite o e-mail para envios">
+                                    </div>
+                                </div>
+
+                                <!-- WhatsApp -->
+                                <div class="col-md-6 mb-3 channel-detail" data-channel="whatsapp" style="display: none;">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="useSameWhatsAppEnvios" name="use_same_whatsapp_envios" checked>
+                                        <label class="form-check-label" for="useSameWhatsAppEnvios">
+                                            Usar WhatsApp de vencimentos para envios
+                                        </label>
+                                    </div>
+                                    <div class="mb-3" id="differentWhatsAppField" style="display: none;">
+                                        <label for="whatsappEnvios" class="form-label">WhatsApp para envios</label>
+                                        <input type="text" class="form-control" id="whatsappEnvios" name="whatsapp_envios" placeholder="Digite o WhatsApp para envios" onkeyup="handlePhone(event)">
+                                    </div>
+                                </div>
+
+                                <!-- Portal -->
+                                <div class="col-md-6 mb-3 channel-detail" data-channel="portal" style="display: none;">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="useSameEmailToPortalEnvios" name="use_same_portal_envios" checked>
+                                        <label class="form-check-label" for="useSameEmailToPortalEnvios">
+                                            Usar e-mail de vencimentos para portal de envios
+                                        </label>
+                                    </div>
+                                    <div class="mb-3" id="differentEmailToPortalField" style="display: none;">
+                                        <label for="portalEnvios" class="form-label">E-mail para portal de envios</label>
+                                        <input type="text" class="form-control" id="portalEnvios" name="portal_envios" placeholder="Digite o e-mail para o portal de envios">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-between">
-
                             <a href="<?= INCLUDE_PATH_DASHBOARD; ?>empresas" class="btn btn-light">Voltar</a>
-
                             <div>
-
                                 <button class="btn btn-primary" id="btnSubmit" type="submit">Cadastrar</button>
                                 <button class="btn btn-primary loader-btn d-none" id="btnLoader" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                                     <span role="status">Carregando...</span>
                                 </button>
-
                             </div>
-
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
+        <!-- jQuery para gerenciar a exibição dos campos personalizados -->
+        <script>
+            $(document).ready(function(){
+                // Mostrar ou esconder os detalhes do canal conforme o checkbox de canal é marcado ou desmarcado
+                $('.channel-checkbox').on('change', function(){
+                    var channel = $(this).val();
+                    if($(this).is(':checked')){
+                        $('.channel-detail[data-channel="'+channel+'"]').slideDown();
+                    } else {
+                        $('.channel-detail[data-channel="'+channel+'"]').slideUp();
+                    }
+                });
+
+                // Alterna o campo de e-mail personalizado
+                $('#useSameEmailEnvios').on('change', function(){
+                    if($(this).is(':checked')){
+                        $('#differentEmailField').slideUp();
+                    } else {
+                        $('#differentEmailField').slideDown();
+                    }
+                });
+                
+                // Alterna o campo de WhatsApp personalizado
+                $('#useSameWhatsAppEnvios').on('change', function(){
+                    if($(this).is(':checked')){
+                        $('#differentWhatsAppField').slideUp();
+                    } else {
+                        $('#differentWhatsAppField').slideDown();
+                    }
+                });
+
+                // Alterna o campo de e-mail personalizado
+                $('#useSameEmailToPortalEnvios').on('change', function(){
+                    if($(this).is(':checked')){
+                        $('#differentEmailToPortalField').slideUp();
+                    } else {
+                        $('#differentEmailToPortalField').slideDown();
+                    }
+                });
+            });
+        </script>
     </div>
 </div>
 
@@ -285,6 +370,26 @@ $(document).ready(function() {
         return false;
     }, "Por favor, insira um CPF ou CNPJ válido");
 
+    // Adicionar validação personalizada para o e-mail
+    $.validator.addMethod("emailExists", function(value, element) {
+        let isValid = false;
+        if (value) {
+            $.ajax({
+                url: "<?= INCLUDE_PATH_DASHBOARD; ?>back-end/forms-validations/email-exists.php", // URL do script PHP que verifica o e-mail no banco de dados
+                type: "POST",
+                data: { action: 'email-exists', email: value },
+                async: false, // Sincronizar para garantir a validação antes de prosseguir
+                success: function(response) {
+                    isValid = response.status === "available"; // Verifica se o e-mail está disponível
+                },
+                error: function() {
+                    isValid = false;
+                }
+            });
+        }
+        return isValid;
+    }, "Este e-mail já está cadastrado.");
+
     function validarCPF(cpf) {
         let soma = 0;
         let resto;
@@ -386,6 +491,24 @@ $(document).ready(function() {
             },
             uf: "required",
             cidade: "required",
+            // Campo de e-mail para envios: obrigatório se não usar o mesmo
+            email_envios: {
+                required: {
+                    depends: function(element) {
+                        return !$("#useSameEmailEnvios").is(":checked");
+                    }
+                },
+                email: true,
+                emailExists: true,
+            },
+            // Campo de WhatsApp para envios: obrigatório se não usar o mesmo
+            whatsapp_envios: {
+                required: {
+                    depends: function(element) {
+                        return !$("#useSameWhatsAppEnvios").is(":checked");
+                    }
+                }
+            },
         },
         messages: {
             name: {
@@ -412,9 +535,18 @@ $(document).ready(function() {
             },
             uf: "Por favor, selecione um Estado (UF)",
             cidade: "Por favor, selecione uma cidade",
+            email_envios: {
+                required: "Por favor, insira um e-mail para envios",
+                email: "Por favor, insira um e-mail válido",
+                emailExists: "Este e-mail já está cadastrado.",
+            },
+            whatsapp_envios: {
+                required: "Por favor, insira o WhatsApp para envios",
+            },
         },
         errorElement: "em",
         errorPlacement: function (error, element) {
+            console.log(element.prop("type"));
             error.addClass("invalid-feedback");
             if (element.prop("type") === "checkbox") {
                 error.insertAfter(element.next("label"));
@@ -450,7 +582,7 @@ $(document).ready(function() {
 
             // Realiza o AJAX para enviar os dados
             $.ajax({
-                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/register-company.php', // Substitua pelo URL do seu endpoint
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/register.php', // Substitua pelo URL do seu endpoint
                 type: 'POST',
                 data: formData,
                 processData: false, // Impede que o jQuery processe os dados

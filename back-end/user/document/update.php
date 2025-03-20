@@ -54,8 +54,9 @@
             case 'image/png':
                 $extension = 'png';
                 break;
-            case 'application/x-pkcs12':
-                $extension = 'p12';
+            case 'application/x-pkcs12': 
+            case 'application/octet-stream': 
+                $extension = 'pfx';
                 break;
             default:
                 throw new Exception("Formato de arquivo não suportado: {$mime_type}");

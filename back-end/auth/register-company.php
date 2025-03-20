@@ -39,7 +39,6 @@
 
             if (!$user) {
                 echo json_encode(['status' => 'error', 'alert' => 'danger', 'message' => 'Faça login para continuar o cadastro da sua empresa.']);
-                $conn->rollBack(); // Reverte a transação
                 exit();
             }
 

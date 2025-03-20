@@ -10,4 +10,5 @@ files/profile/documents/*
 files/
 node_modules/
 vendor/
+uploads/
 README.dev.md

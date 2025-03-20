@@ -221,12 +221,12 @@
                                         <label for="whatsapp_frequency" class="form-label">Frequência de envio</label>
                                         <div class="col-lg-12 col-xl-12">
                                             <select class="form-select" name="whatsapp_frequency" id="whatsapp_frequency" required>
-                                                <option value="once_due" <?php if (!isset($settingsWhatsapp) || (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'once_due')) {echo 'selected';} ?>>No dia do vencimento e uma vez antes (Padrão)</option>
-                                                <option value="daily_until_due" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'daily_until_due') {echo 'selected';} ?>>Todo dia (Iniciando no prazo escolhido na criação do documento até o vencimento)</option>
-                                                <option value="daily_until_after" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'daily_until_after') {echo 'selected';} ?>>Todos os dias antes do vencimento (Iniciando no prazo escolhido na criação e até 7 dias depois)</option>
-                                                <option value="predefined_dates" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'predefined_dates') {echo 'selected';} ?>>No dia predefinido, no vencimento e continuar notificando por 7 dias depois</option>
+                                                <option value="once_due" <?php if (!isset($settingsWhatsapp) || (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'once_due')) {echo 'selected';} ?>>Conforme prazo escolhido no cadastro do documento e no vencimento (padrão)</option>
+                                                <option value="daily_until_due" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'daily_until_due') {echo 'selected';} ?>>Todo dia (iniciando no prazo escolhido até o vencimento)</option>
+                                                <option value="daily_until_after" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'daily_until_after') {echo 'selected';} ?>>Todos os dias antes do vencimento (iniciando no prazo escolhido e até 7 dias após o vencimento)</option>
+                                                <option value="predefined_dates" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'predefined_dates') {echo 'selected';} ?>>No dia predefinido, no vencimento e até 7 dias após o vencimento</option>
                                                 <option value="due_date" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'due_date') {echo 'selected';} ?>>Apenas no dia do vencimento</option>
-                                                <option value="personalized" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'personalized') {echo 'selected';} ?>>Dia predefinido</option>
+                                                <option value="personalized" <?php if (isset($settingsWhatsapp['send_type']) && $settingsWhatsapp['send_type'] == 'personalized') {echo 'selected';} ?>>Apenas no dia predefinido</option>
                                             </select>
                                         </div>
                                     </div>

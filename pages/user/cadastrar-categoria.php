@@ -31,10 +31,10 @@
                             <input class="form-control" name="name" type="text" id="name" maxlength="120" placeholder="Digite o Nome da Categoria" required>
                         </div>
 
-                        <!-- Descrição da Categoria -->
+                        <!-- Observação -->
                         <div class="mb-3">
-                            <label for="description" class="form-label">Descrição da Categoria</label>
-                            <textarea class="form-control" name="description" id="description" rows="5" spellcheck="false" placeholder="Digite a Descrição da Categoria"></textarea>
+                            <label for="description" class="form-label">Observação</label>
+                            <textarea class="form-control" name="description" id="description" rows="5" spellcheck="false" placeholder="Digite a Observação"></textarea>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-between">

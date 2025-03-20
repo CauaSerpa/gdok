@@ -42,7 +42,7 @@
                             <div class="overflow-hidden ms-md-4 ms-0">
                                 <h4 class="m-0 text-dark fs-20 mt-2 mt-md-0"><?= $user['shortname']; ?></h4>
                                 <p class="my-1 text-muted fs-16"><?= $user['email']; ?></p>
-                                <span class="d-flex align-items-center fs-15"><i class="mdi mdi-office-building-marker me-1 align-middle fs-18"></i>Empresa: <span class="ms-1"><?= $office['name']; ?> | <?= $office['document']; ?></span></span>
+                                <span class="d-flex align-items-center fs-15"><i class="mdi mdi-office-building-marker me-1 align-middle fs-18"></i><?= $office['name']; ?> | <?= $office['document']; ?></span>
                             </div>
                         </div>
 

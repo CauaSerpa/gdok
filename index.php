@@ -1,13 +1,101 @@
 <?php
+    // ini_set('display_errors', 1);
+    // ini_set('display_startup_errors', 1);
+    // error_reporting(E_ALL);
+
     session_start();
     ob_start();
     include('./config.php');
 
+    if (isset($_SESSION['user_id']) || isset($_SESSION['finalize_registration_user_id'])) {
+        $user['id'] = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : $_SESSION['finalize_registration_user_id'];
+        $permission = getUserPermission($user['id'], $conn);
+    }
+
+
+
+
+
+
+
+
+
+
+
+// Função para determinar o título da página com base na URL
+function getPageTitle($url) {
+    // Mapeamento customizado: associe rotas a títulos desejados
+    $map = [
+        'home'                      => 'Painel Administrativo',
+        'editar-empresa'            => 'Editar Empresa',
+        'editar-documento'          => 'Editar Documento',
+        'editar-tipo-documento'     => 'Editar Tipo de Documento',
+        'editar-categoria'          => 'Editar Categoria',
+        'editar-documento-envio'    => 'Editar Documento de Envio',
+        'editar-categoria-envio'    => 'Editar Categoria de Envio',
+        'editar-depto-envio'        => 'Editar Depto de Envio',
+        'escritorio'                => 'Escritório',
+        'parametrizar-notificacoes' => 'Parametrizar Notificações',
+        'configuracoes'             => 'Configurações',
+        'portal'                    => 'Portal',
+        'c'                         => 'Categorias',
+    ];
+
+    // Se a URL estiver vazia, retorna um título padrão
+    if (empty($url)) {
+        return 'Painel';
+    }
+
+    // Se a URL contém barras, considere o primeiro segmento
+    $segments = explode('/', $url);
+    $firstSegment = strtolower($segments[0]);
+
+    // Se existir um título customizado para o primeiro segmento, retorna-o
+    if (array_key_exists($firstSegment, $map)) {
+        return $map[$firstSegment];
+    }
+
+    // Se não houver mapeamento, formata a URL: substitui traços por espaços e coloca em maiúscula
+    return ucwords(str_replace("-", " ", $url));
+}
+
+
+
+
+
+
+
     //Url Amigavel
     $url = isset($_GET['url']) ? $_GET['url'] : 'home';
 
-    //Edita o escrito da url para ser colocado no title
-    $title = ($url == "") ? "Painel" : ucwords(str_replace("-", " ", str_replace("/", " ", $url)));
+    // //Edita o escrito da url para ser colocado no title
+    // $title = ($url == "") ? "Painel" : ucwords(str_replace("-", " ", str_replace("/", " ", $url)));
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Determina o título com base na URL
+$title = getPageTitle($url);
+
+
+
+
+
+
+
+
+
+
+
 
     // Iniciando variável $tab
     $tab = "";
@@ -37,6 +125,11 @@
             }
         }
     }
+
+    // echo "Tab: $tab<br>";
+    // echo "Url: $url<br>";
+    // echo "Token: $token<br>";
+    // exit;
 ?>
 
 <?php
@@ -45,19 +138,9 @@
         // Data atual
         $currentDate = date('Y-m-d');
 
-        // Query para buscar documentos próximos do vencimento
-        $sql = "
-            SELECT COUNT(d.id) AS count
-            FROM tb_documents d
-            INNER JOIN tb_users u ON u.id = d.user_id -- Supondo que há uma tabela de usuários
-            WHERE d.user_id = :user_id AND DATE_SUB(d.expiration_date, INTERVAL 
-                CASE
-                    WHEN d.personalized_advance_notification IS NOT NULL THEN d.personalized_advance_notification
-                    ELSE d.advance_notification
-                END DAY) <= :currentDate
-        ";
+        $sql = "SELECT COUNT(id) AS count FROM tb_notifications WHERE user_id = ? AND is_read = 0 AND notification_type IN ('system', 'document_expiration_system', 'custom', 'document') ORDER BY created_at DESC LIMIT 10";
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['currentDate' => $currentDate, 'user_id' => $_SESSION['user_id']]);
+        $stmt->execute([$_SESSION['user_id']]);
 
         // Obter os resultados
         $notifications = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -116,11 +199,12 @@
         <!-- App js-->
         <!-- <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/app.js"></script> -->
 
+        <?php elseif ($url == "home"): ?>
         <?php endif; ?>
 
     </head>
 
-    <body <?= ($tab == "auth" || $url == "auth") ? 'class="bg-primary-subtle"' : 'data-menu-color="light" data-sidebar="default"'; ?>>
+    <body <?= ($tab == "auth" || $url == "auth") ? 'class="bg-primary-subtle"' : (($url == "portal") ? 'data-menu-color="light" data-sidebar="hidden"' : 'data-menu-color="light" data-sidebar="default"'); ?>>
 
         <?php
             // Se for a página de verificação de e-mail
@@ -128,6 +212,10 @@
                 include('templates/error-pages/404.php');
             } elseif ($tab == "auth" || $url == "auth") {
                 include('templates/auth.php');
+            } elseif ($permission['role'] == 3) {
+                include('templates/portal-cliente.php');
+            } elseif ($tab == "portal" || $url == "portal") {
+                include('templates/portal.php');
             } else {
                 include('templates/dashboard.php');
             }
@@ -154,13 +242,13 @@
         <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/pages/crm-dashboard.init.js"></script>
 
         <!-- Apexcharts JS -->
-        <!-- <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/libs/apexcharts/apexcharts.min.js"></script> -->
+        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/libs/apexcharts/apexcharts.min.js"></script>
 
         <!-- for basic area chart -->
-        <!-- <script src="<?= INCLUDE_PATH_DASHBOARD; ?>https://apexcharts.com/samples/assets/stock-prices.js"></script> -->
+        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>https://apexcharts.com/samples/assets/stock-prices.js"></script>
 
-        <!-- Widgets Init Js -->
-        <!-- <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/pages/crm-dashboard.init.js"></script> -->
+        <!-- Apexcharts Init Js -->
+        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/pages/apexcharts-line.init.js"></script>
 
         <?php endif; ?>
 

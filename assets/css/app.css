@@ -2650,7 +2650,7 @@ span.select2-container--default span.select2-selection--single span.select2-sele
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  border: var(--bs-border-width) solid var(--bs-border-color-translucent);
+  border: var(--bs-border-width) solid var(--bs-gray-600);
   print-color-adjust: exact;
 }
 .form-check-input[type=checkbox] {

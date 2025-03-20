@@ -5,10 +5,23 @@
 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['document']) && isset($_POST['action']) && $_POST['action'] === "document-exists") {
         $document = trim($_POST['document']);
+        $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : '';
 
         try {
-            $stmt = $conn->prepare("SELECT id FROM tb_users WHERE document = ?");
-            $stmt->execute([$document]);
+            $sql = "SELECT id FROM tb_users WHERE document = :document";
+
+            if (!empty($user_id)) {
+                $sql .= " AND id != :user_id";
+            }
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':document', $document, PDO::PARAM_STR);
+
+            if (!empty($user_id)) {
+                $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            }
+
+            $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user) {

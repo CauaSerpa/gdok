@@ -27,6 +27,15 @@
 
                 header('Location: ' . INCLUDE_PATH_DASHBOARD);
                 exit;
+            } else if ($permission['role'] == 3) {
+                $_SESSION['user_id'] = $_SESSION['finalize_registration_user_id'];
+                $_SESSION['email'] = $_SESSION['finalize_registration_email'];
+
+                unset($_SESSION['finalize_registration_user_id']);
+                unset($_SESSION['finalize_registration_email']);
+
+                header('Location: ' . INCLUDE_PATH_DASHBOARD);
+                exit;
             }
         } else {
             // Se o usuário não for encontrado, redireciona para login ou erro
@@ -45,7 +54,7 @@
         // Se o usuário não for encontrado, redireciona para login ou erro
         session_destroy();
         session_start();
-        $_SESSION['msg'] = array(
+        $_SESSION['msg_login'] = array(
             'status' => 'error',
             'alert' => 'danger',
             'title' => 'Erro',

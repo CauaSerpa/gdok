@@ -19,13 +19,47 @@
     // Define atributos com base no nível de acesso
     $readonly = $isEmployee ? 'readonly disabled' : ''; // Employee só pode ler
     $readonlyManager = ($isManager || $isEmployee) ? 'readonly disabled' : ''; // Manager e Employee não podem mudar email/CNPJ
+
+    function formatCompanyNameForURL($name) {
+        // Converte para minúsculas
+        $name = mb_strtolower($name, 'UTF-8');
+    
+        // Remove acentos
+        $name = preg_replace('/[áàãâä]/u', 'a', $name);
+        $name = preg_replace('/[éèêë]/u', 'e', $name);
+        $name = preg_replace('/[íìîï]/u', 'i', $name);
+        $name = preg_replace('/[óòõôö]/u', 'o', $name);
+        $name = preg_replace('/[úùûü]/u', 'u', $name);
+        $name = preg_replace('/[ç]/u', 'c', $name);
+    
+        // Remove caracteres especiais, mantendo letras, números e espaços
+        $name = preg_replace('/[^a-z0-9\s-]/', '', $name);
+    
+        // Substitui espaços e múltiplos hífens por um único hífen
+        $name = preg_replace('/[\s-]+/', '-', trim($name));
+    
+        return $name;
+    }
 ?>
 
-<div class="tab-pane pt-4" id="company_settings" role="tabpanel">
+<div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+    <div class="flex-grow-1">
+        <h4 class="fs-18 fw-semibold m-0">Escritório</h4>
+    </div>
+
+    <div class="text-end">
+        <a href="<?= INCLUDE_PATH_PORTAL; ?><?= !empty($office['link']) ? $office['link'] : formatCompanyNameForURL($office['name']); ?>" target="_blank" class="btn btn-success">
+            <i class="mdi mdi-open-in-new fs-16 align-middle"></i>
+            Portal do Cliente
+        </a>
+    </div>
+</div>
+
+<div class="tab-pane" id="company_settings" role="tabpanel">
     <div class="row">
 
         <div class="row">
-            <div class="col-lg-6 col-xl-6">
+            <div class="col-lg-12 col-xl-12">
                 <div class="card border">
 
                     <div class="card-header">
@@ -84,6 +118,17 @@
                                 </div>
                             </div>
 
+                            <div class="form-group mb-3 row">
+                                <label class="form-label">Link Para Portal do Cliente</label>
+                                <div class="col-lg-12 col-xl-12">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3"><?= INCLUDE_PATH_DASHBOARD; ?></span>
+                                        <input class="form-control" name="link" type="text" id="link" value="<?= !empty($office['link']) ? $office['link'] : formatCompanyNameForURL($office['name']); ?>" aria-describedby="basic-addon3 basic-addon4" <?= $readonly; ?>>
+                                    </div>
+                                    <div class="form-text" id="basic-addon4">Modifique o link que seus clientes usarão para acessar o portal de documentos da sua empresa.</div>
+                                </div>
+                            </div>
+
                             <?php if (!$isEmployee): // Esconde o botão para Employees ?>
                                 <div class="form-group row">
                                     <div class="col-lg-12 col-xl-12">
@@ -100,9 +145,10 @@
 
                     </div><!--end card-body-->
                 </div>
+
             </div>
 
-            <div class="col-lg-6 col-xl-6">
+            <div class="col-lg-12 col-xl-12">
                 <div class="card border">
                     <div class="card-header">
                         <div class="row align-items-center">
@@ -150,20 +196,20 @@
                             <div id="map" style="width: 600px; height: 400px;"></div>
                         </div> -->
                         <!-- Endereço da Sede -->
-                        <div class="text-end">
+                        <!-- <div class="text-end">
                             <p><strong>Endereço:</strong> <?= formatAddress($office); ?></p>
-                        </div>
+                        </div> -->
 
-                        <style>
+                        <!-- <style>
                             .jvm-tooltip {
                                 background-color: #287F71 !important;
                             }
                         </style>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css">
                         <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/js/jsvectormap.min.js"></script>
-                        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/map/brasil.js"></script> <!-- Arquivo do mapa do Brasil -->
+                        <script src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/js/map/brasil.js"></script> --> <!-- Arquivo do mapa do Brasil -->
 
-                        <script>
+                        <!-- <script>
                             const estados = <?php echo json_encode([$office['state']]); ?>; // Converte o array PHP para JavaScript
 
                             const markers = [
@@ -220,7 +266,7 @@
                                     }
                                 },
                             });
-                        </script>
+                        </script> -->
 
                         <form id="officeAddressForm">
 
@@ -328,6 +374,175 @@
                         </form>
 
                     </div><!--end card-body-->
+                </div>
+
+                <div class="col-lg-12 col-xl-12">
+                    
+                    <style>
+                        .form-fieldset {
+                            padding: 1rem;
+                            margin-bottom: 1rem;
+                            background: #f6f8fb;
+                            border: 1px solid #dce1e7;
+                            border-radius: 4px;
+                        }
+
+                        .glightbox-clean .gslide-media {
+                            background: #f9f9f9 !important;
+                        }
+                    </style>
+
+                    <div class="card border">
+
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-title mb-0">Logo do Escritório</h4>
+                                </div><!--end col-->
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form id="officeLogoForm">
+
+                                <!-- Logo do Escritório -->
+                                <div class="form-group mb-3 row">
+                                    <label for="logo" class="form-label">Logo do Escritório</label>
+                                    <div class="col-lg-12 col-xl-12">
+                                        <input class="form-control" name="logo" type="file" id="logo" accept=".jpg,.png,.gif" <?= $readonlyManager; ?>>
+                                    </div>
+                                    <small class="form-hint text-end">Recomendamos logos em <b>.png, .jpg, .gif</b> até <b>2MB</b> com <b>150px X 20px</b>.</small>
+                                </div>
+
+                                <!-- Preview Dinâmico da Nova Logo -->
+                                <div id="newLogoPreviewContainer" class="form-group mb-3 row <?= empty($office['logo']) ? "d-none" : ""; ?>">
+                                    <label for="logo" class="form-label">Prévia da Logo</label>
+                                    <div class="col-lg-12 col-xl-12">
+                                        <fieldset class="form-fieldset">
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2">
+                                                    <div class="card gallery-container gallery-grid position-relative d-block overflow-hidden rounded mb-0">
+                                                        <div class="card-body gallery-image p-0">
+                                                            <a id="newLogoLink" href="<?= !empty($office['logo']) ? $office['logo'] : ""; ?>" class="image-popup d-inline-block" data-type="image">
+                                                                <img id="newLogoPreview" src="<?= !empty($office['logo']) ? $office['logo'] : ""; ?>" class="img-fluid" alt="Prévia da Nova Logo">
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-10 col-md-10 d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <h5 id="imageName"><?= !empty($office['logo']) ? basename($office['logo']) : ''; ?></h5>
+                                                        <p id="fileSize" class="mb-0"><?= !empty($office['logo']) ? getFileSize($office['logo']) : ''; ?></p>
+                                                    </div>
+                                                    <div>
+                                                        <label for="logo" class="btn bg-primary bg-opacity-10 text-primary rounded-3 px-2 py-1 d-inline-flex justify-content-center align-content-center">
+                                                            <i class="mdi mdi-image-edit-outline fs-19 align-middle"></i>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+                                <?php if (!$isEmployee): // Esconde o botão para Employees ?>
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 col-xl-12">
+                                            <button class="btn btn-primary" id="btnSubmit" type="submit">Salvar</button>
+                                            <button class="btn btn-primary loader-btn d-none" id="btnLoader" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                                <span role="status">Carregando...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+
+                            </form>
+
+                        </div><!--end card-body-->
+                    </div>
+
+                    <!-- GLightbox CSS e JS -->
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+                    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+                    <script>
+                        $(document).ready(function () {
+                            let originalLogoSrc = $("#newLogoPreview").attr("src"); // Guarda a logo original
+                            let lightboxInstance; // Variável global para armazenar a instância do GLightbox
+
+                            // Inicia o GLightbox para imagens já carregadas ao abrir a página
+                            if (originalLogoSrc) {
+                                lightboxInstance = GLightbox({ selector: '.image-popup' });
+                            }
+
+                            // Preview da nova logo ao selecionar um arquivo
+                            $("#logo").on("change", function (event) {
+                                const file = event.target.files[0];
+
+                                if (file && file.type.startsWith("image/")) {
+                                    const reader = new FileReader();
+
+                                    reader.onload = function (e) {
+                                        // Atualiza o preview com a nova imagem
+                                        $("#newLogoPreview").attr("src", e.target.result);
+
+                                        // Atualiza o link do preview para garantir que o GLightbox funcione corretamente
+                                        $("#newLogoLink")
+                                            .attr("href", e.target.result)
+                                            .attr("data-type", "image")
+                                            .addClass("image-popup");
+
+                                        $("#newLogoPreviewContainer").removeClass("d-none");
+
+                                        // Exibir o nome do arquivo
+                                        $("#imageName").text(file.name);
+
+                                        // Exibir o tamanho do arquivo formatado
+                                        let fileSize = file.size / 1024; // Convertendo para KB
+                                        if (fileSize > 1024) {
+                                            fileSize = (fileSize / 1024).toFixed(0) + " MB"; // Convertendo para MB
+                                        } else {
+                                            fileSize = fileSize.toFixed(0) + " KB"; // Mantendo em KB
+                                        }
+                                        $("#fileSize").text(fileSize);
+
+                                        // Remover a instância anterior do GLightbox se já existir
+                                        if (lightboxInstance) {
+                                            lightboxInstance.destroy();
+                                        }
+
+                                        // Criar uma nova instância do GLightbox para capturar a nova imagem
+                                        lightboxInstance = GLightbox({ selector: '.image-popup' });
+                                    };
+
+                                    reader.readAsDataURL(file);
+                                } else {
+                                    resetPreview();
+                                }
+                            });
+
+                            // Caso o usuário desmarque a seleção do input file
+                            $("#logo").on("input", function () {
+                                if (!this.files.length) {
+                                    resetPreview();
+                                }
+                            });
+
+                            // Função para resetar o preview para o estado original
+                            function resetPreview() {
+                                if (originalLogoSrc) {
+                                    $("#newLogoPreviewContainer").addClass("d-none");
+                                    $("#newLogoPreview").attr("src", originalLogoSrc);
+                                    $("#newLogoLink").attr("href", originalLogoSrc);
+                                } else {
+                                    $("#newLogoPreviewContainer").addClass("d-none");
+                                }
+                            }
+                        });
+                    </script>
+
                 </div>
             </div>
 
@@ -556,6 +771,71 @@ $(document).ready(function() {
 
                     $(".alert").remove();
                     $("#officeForm").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">Ocorreu um erro, tente novamente mais tarde.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                    btnSubmit.prop("disabled", false).removeClass("d-none");
+                    btnLoader.addClass("d-none");
+                }
+            });
+        }
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    // Validação do Formulário de Logo
+    $("#officeLogoForm").validate({
+        rules: {
+            logo: "required",
+        },
+        messages: {
+            logo: "Por favor, selecione um arquivo.",
+        },
+        errorElement: "em",
+        errorPlacement: function (error, element) {
+            error.addClass("invalid-feedback");
+            error.insertAfter(element);
+        },
+        highlight: function (element) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+        },
+        unhighlight: function (element) {
+            $(element).addClass("is-valid").removeClass("is-invalid");
+        },
+        submitHandler: function (form, event) {
+            event.preventDefault();
+
+            var btnSubmit = $("#officeLogoForm #btnSubmit");
+            var btnLoader = $("#officeLogoForm #btnLoader");
+
+            btnSubmit.prop("disabled", true).addClass("d-none");
+            btnLoader.removeClass("d-none");
+
+            var formData = new FormData(form);
+            formData.append("action", "upload-office-logo");
+            formData.append("office_id", <?= $office['id'] ?? 0; ?>);
+
+            $.ajax({
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/office/update/logo.php',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.status === "success") {
+                        location.reload();
+                    } else {
+                        $(".alert").remove();
+                        $("#officeLogoForm").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    }
+                    btnSubmit.prop("disabled", false).removeClass("d-none");
+                    btnLoader.addClass("d-none");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Erro no AJAX:", status, error);
+
+                    $(".alert").remove();
+                    $("#officeLogoForm").before('<div class="alert alert-danger alert-dismissible fade show w-100" role="alert">Ocorreu um erro, tente novamente mais tarde.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
                     btnSubmit.prop("disabled", false).removeClass("d-none");
                     btnLoader.addClass("d-none");

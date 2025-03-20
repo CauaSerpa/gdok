@@ -13,7 +13,7 @@
         // Salva pagina que o usuario estava anteriormente
         $_SESSION['http_referer'] = $url;
 
-        $_SESSION['msg'] = array('status' => 'error', 'alert' => 'danger', 'title' => 'Erro', 'message' => 'Por favor faça login para acessar essa página.');
+        $_SESSION['msg_login'] = array('status' => 'error', 'alert' => 'danger', 'title' => 'Erro', 'message' => 'Por favor faça login para acessar essa página.');
 
         // Usuário não está logado ou não tem permissões
         header("Location: " . INCLUDE_PATH_AUTH);

@@ -86,10 +86,10 @@
                             <input class="form-control" name="name" type="text" id="name" value="<?= $category['name']; ?>" maxlength="120" placeholder="Digite o Nome da Categoria" required>
                         </div>
 
-                        <!-- Descrição da Categoria -->
+                        <!-- Observação -->
                         <div class="mb-3">
-                            <label for="description" class="form-label">Descrição da Categoria</label>
-                            <textarea class="form-control" name="description" id="description" rows="5" spellcheck="false" placeholder="Digite a Descrição da Categoria"><?= $category['description']; ?></textarea>
+                            <label for="description" class="form-label">Observação</label>
+                            <textarea class="form-control" name="description" id="description" rows="5" spellcheck="false" placeholder="Digite a Observação"><?= $category['description']; ?></textarea>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-between">
@@ -100,7 +100,7 @@
 
                                 <button class="btn btn-danger btn-delete" type="button" data-id="<?= $category['id']; ?>" data-name="<?= $category['name']; ?>">Excluir</button>
 
-                                <button class="btn btn-primary" id="btnSubmit" type="submit">Cadastrar</button>
+                                <button class="btn btn-primary" id="btnSubmit" type="submit">Salvar</button>
                                 <button class="btn btn-primary loader-btn d-none" id="btnLoader" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                                     <span role="status">Carregando...</span>

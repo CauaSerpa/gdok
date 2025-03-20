@@ -48,6 +48,11 @@
                             <div class="alert alert-<?= $_SESSION['msg']['alert']; ?>"><?= $_SESSION['msg']['message']; ?></div>
                         <?php unset($_SESSION['msg']); endif; ?>
 
+                        <!-- Exibição de mensagem de sucesso ou erro -->
+                        <?php if (isset($_SESSION['msg_login'])): ?>
+                            <div class="alert alert-<?= $_SESSION['msg_login']['alert']; ?>"><?= $_SESSION['msg_login']['message']; ?></div>
+                        <?php unset($_SESSION['msg_login']); endif; ?>
+
                         <div class="auth-title-section mb-3 text-center"> 
                             <h3 class="text-dark fs-20 fw-medium mb-2">Bem-vindo de volta</h3>
                             <p class="text-dark text-capitalize fs-14 mb-0">Faça login para continuar no <?= $project['name']; ?>.</p>

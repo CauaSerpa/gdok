@@ -1,12 +1,12 @@
 <?php
-    function getDocumentByToken($category_id, $conn) {
+    function getDocumentByToken($document_id, $conn) {
         try {
             if (!$conn) {
                 throw new Exception("Conexão inválida com o banco de dados.");
             }
 
             $stmt = $conn->prepare("SELECT * FROM tb_documents WHERE id = ? LIMIT 1");
-            $stmt->execute([$category_id]);
+            $stmt->execute([$document_id]);
 
             if ($stmt->rowCount() > 0) {
                 return $stmt->fetch(PDO::FETCH_ASSOC);

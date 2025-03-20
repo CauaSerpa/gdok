@@ -170,7 +170,7 @@
             if (elementIdToDelete) {
                 // Substitua esta URL pela rota de exclusão do seu servidor
                 $.ajax({
-                    url: `<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/delete-company.php?id=${elementIdToDelete}`,
+                    url: `<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/delete.php?id=${elementIdToDelete}`,
                     type: 'DELETE',
                     success: function (response) {
                         location.reload();
@@ -197,7 +197,7 @@
             ordering: true,
             paging: true,
             ajax: {
-                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/list-companies.php',
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/list.php',
                 type: 'GET',
                 data: function (d) {
                     // Adiciona os filtros à requisição
@@ -217,6 +217,7 @@
                 { data: 'document' },
                 {
                     data: 'actions',
+                    className: 'text-center',
                     orderable: false,
                     searchable: false,
                     width: '10%'

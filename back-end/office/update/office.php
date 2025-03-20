@@ -10,6 +10,7 @@
             $email = $_POST['email'];
             $document = $_POST['document'];
             $phone = $_POST['phone'];
+            $link = $_POST['link'];
             $id = $_POST['office_id'];
 
             try {
@@ -22,10 +23,10 @@
 
                 $stmt = $conn->prepare("
                     UPDATE tb_offices SET
-                    name = ?, email = ?, document = ?, phone = ?
+                    name = ?, email = ?, document = ?, phone = ?, link = ?
                     WHERE id = ?
                 ");
-                $stmt->execute([$name, $email, $document, $phone, $id]);
+                $stmt->execute([$name, $email, $document, $phone, $link, $id]);
 
                 // Commit na transação
                 $conn->commit();

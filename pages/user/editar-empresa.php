@@ -27,7 +27,7 @@
         exit;
     }
 
-    include('back-end/user/company/company-functions.php');
+    include('back-end/user/company/functions.php');
 
     // Validar o token (por exemplo, verificar se existe no banco de dados)
     $company_id = $token;
@@ -41,6 +41,8 @@
         header('Location: ' . INCLUDE_PATH_DASHBOARD . 'empresas');
         exit;
     }
+
+    $company['channels'] = json_decode($company['channels']);
 
     // Caso a empresa exista, preencher os campos com os dados da empresa
 ?>
@@ -73,7 +75,7 @@
 
                         <!-- Name -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nome da Empresa</label>
+                            <label for="name" class="form-label">Nome da Empresa*</label>
                             <input class="form-control" name="name" type="text" id="name" maxlength="120" placeholder="Digite o Nome da Empresa" value="<?= $company['name']; ?>" required>
                         </div>
 
@@ -83,7 +85,7 @@
 
                                 <!-- CPF/CNPJ -->
                                 <div class="mb-3">
-                                    <label for="document" class="form-label">CPF/CNPJ</label>
+                                    <label for="document" class="form-label">CPF/CNPJ*</label>
                                     <input class="form-control" name="document" type="text" id="document" placeholder="Digite o CPF ou CNPJ" value="<?= $company['document']; ?>" onkeyup="handleCpfCnpj(event)" required>
                                 </div>
 
@@ -93,7 +95,7 @@
 
                                 <!-- Responsável -->
                                 <div class="mb-3">
-                                    <label for="responsible" class="form-label">Responsável</label>
+                                    <label for="responsible" class="form-label">Responsável*</label>
                                     <input class="form-control" name="responsible" type="text" id="responsible" maxlength="100" placeholder="Digite o Nome do Responsável" value="<?= $company['responsible']; ?>" required>
                                 </div>
 
@@ -107,7 +109,7 @@
 
                                 <!-- Phone -->
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">Telefone</label>
+                                    <label for="phone" class="form-label">Telefone*</label>
                                     <input class="form-control" name="phone" type="tel" id="phone" maxlength="15" placeholder="Digite o Telefone" value="<?= $company['phone']; ?>" onkeyup="handlePhone(event)" required>
 
                                     <div class="form-check form-switch">
@@ -130,7 +132,7 @@
 
                                 <!-- Email -->
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">E-mail</label>
+                                    <label for="email" class="form-label">E-mail*</label>
                                     <input class="form-control" name="email" type="email" id="email" maxlength="120" placeholder="Digite o E-mail" value="<?= $company['email']; ?>" required>
 
                                     <div class="form-check form-switch">
@@ -157,7 +159,7 @@
 
                                 <!-- UF -->
                                 <div class="mb-3">
-                                    <label for="uf" class="form-label">Estado (UF)</label>
+                                    <label for="uf" class="form-label">Estado (UF)*</label>
                                     <select class="form-select" name="uf" id="uf" required>
                                         <option value="" disabled>Selecione um estado</option>
                                         <option value="<?= $company['uf']; ?>" selected><?= $company['uf']; ?></option>
@@ -170,7 +172,7 @@
 
                                 <!-- Cidade -->
                                 <div class="mb-3">
-                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <label for="cidade" class="form-label">Cidade*</label>
                                     <select class="form-select" name="cidade" id="cidade" required>
                                         <option value="" disabled>Selecione uma cidade</option>
                                         <option value="<?= $company['cidade']; ?>" selected><?= $company['cidade']; ?></option>
@@ -181,6 +183,75 @@
 
                         </div>
 
+                        <hr>
+
+                        <h3 class="fs-16 text-dark fw-semibold mb-3 text-capitalize">Envios</h3>
+
+                        <!-- Seção para habilitar os canais de envio -->
+                        <div class="mb-3">
+                            <label class="form-label">Habilitar envio por:</label>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="email" id="channelEmail" name="channels[]" <?php if(isset($company['channels']) && in_array("email", $company['channels'])) echo "checked"; ?>>
+                                <label class="form-check-label" for="channelEmail">E-mail</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="whatsapp" id="channelWhatsApp" name="channels[]" <?php if(isset($company['channels']) && in_array("whatsapp", $company['channels'])) echo "checked"; ?>>
+                                <label class="form-check-label" for="channelWhatsApp">WhatsApp</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input channel-checkbox" type="checkbox" value="portal" id="channelPortal" name="channels[]" <?php if(isset($company['channels']) && in_array("portal", $company['channels'])) echo "checked"; ?>>
+                                <label class="form-check-label" for="channelPortal">Portal</label>
+                            </div>
+                        </div>
+
+                        <?php
+                            if (isset($company['channels']) && in_array("email", $company['channels'])) {
+                                // Consulta para buscar documentos de envio cadastradas
+                                $stmt = $conn->prepare("
+                                    SELECT u.* 
+                                    FROM tb_company_users cu
+                                    JOIN tb_users u ON u.id = cu.user_id
+                                    WHERE cu.company_id = ?
+                                ");
+                                $stmt->execute([$company['id']]);
+                                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                            }
+                        ?>
+
+                        <!-- Detalhes de cada canal selecionado -->
+                        <div id="channelDetails">
+                            <!-- E-mail -->
+                            <div class="mb-3 channel-detail" data-channel="email" style="display: <?php echo ((isset($user['active_status']) && $user['active_status'] == 1) || (isset($company['channels']) && in_array("email", $company['channels']))) ? "block" : "none"; ?>;">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="useSameEmailEnvios" name="use_same_email_envios" <?php echo ($company['use_same_email_envios'] || ($company['email_envios'] == $user['email'])) ? "checked" : ""; ?> <?php echo (isset($user['active_status']) && $user['active_status'] == 1) ? "disabled" : ""; ?>>
+                                    <label class="form-check-label" for="useSameEmailEnvios">
+                                        Usar mesmo e-mail de notificação de vencimento para envios
+                                    </label>
+                                </div>
+                                <div class="mb-3" id="differentEmailField" style="display: <?php echo ($company['use_same_email_envios'] || ($company['email_envios'] == $user['email'])) ? "none" : "block"; ?>;">
+                                    <label for="emailEnvios" class="form-label">E-mail para envios</label>
+                                    <input type="email" class="form-control" id="emailEnvios" name="email_envios" placeholder="Digite o e-mail para envios" value="<?= $user['email']; ?>" <?php echo (isset($user['active_status']) && $user['active_status'] == 1) ? "disabled aria-describedby='emailHelp'" : ""; ?>>
+                                    <?php if (isset($user['active_status']) && $user['active_status'] == 1): ?>
+                                    <small id="emailHelp" class="form-text text-muted">Não é mais possível alterar o e-mail do responsável pela empresa, pois o mesmo já foi confirmado pelo usuário.</small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <!-- WhatsApp -->
+                            <div class="mb-3 channel-detail" data-channel="whatsapp" style="display: <?php echo (isset($company['channels']) && in_array("whatsapp", $company['channels'])) ? "block" : "none"; ?>;">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="useSameWhatsAppEnvios" name="use_same_whatsapp_envios" <?php echo ($company['use_same_whatsapp_envios']) ? "checked" : ""; ?>>
+                                    <label class="form-check-label" for="useSameWhatsAppEnvios">
+                                        Usar mesmo WhatsApp de notificação de vencimento para envios
+                                    </label>
+                                </div>
+                                <div class="mb-3" id="differentWhatsAppField" style="display: <?php echo ($company['use_same_whatsapp_envios']) ? "none" : "block"; ?>;">
+                                    <label for="whatsappEnvios" class="form-label">WhatsApp para envios</label>
+                                    <input type="text" class="form-control" id="whatsappEnvios" name="whatsapp_envios" placeholder="Digite o WhatsApp para envios" value="<?= $company['whatsapp_envios']; ?>">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-flex align-items-center justify-content-between">
 
                             <a href="<?= INCLUDE_PATH_DASHBOARD; ?>empresas" class="btn btn-light">Voltar</a>
@@ -189,7 +260,7 @@
 
                                 <button class="btn btn-danger btn-delete" type="button" data-id="<?= $company['id']; ?>" data-name="<?= $company['name']; ?>">Excluir</button>
 
-                                <button class="btn btn-primary" id="btnSubmit" type="submit">Salvar Alterações</button>
+                                <button class="btn btn-primary" id="btnSubmit" type="submit">Salvar</button>
                                 <button class="btn btn-primary loader-btn d-none" id="btnLoader" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                                     <span role="status">Carregando...</span>
@@ -212,6 +283,38 @@
 
 <script>
     $(document).ready(function () {
+        // Mostrar ou esconder os detalhes do canal conforme o checkbox de canal é marcado ou desmarcado
+        $('.channel-checkbox').on('change', function(){
+            var channel = $(this).val();
+            if($(this).is(':checked')){
+                $('.channel-detail[data-channel="'+channel+'"]').slideDown();
+            } else {
+                $('.channel-detail[data-channel="'+channel+'"]').slideUp();
+            }
+        });
+
+        // Alterna o campo de e-mail personalizado
+        $('#useSameEmailEnvios').on('change', function(){
+            if($(this).is(':checked')){
+                $('#differentEmailField').slideUp();
+            } else {
+                $('#differentEmailField').slideDown();
+            }
+        });
+
+        // Alterna o campo de WhatsApp personalizado
+        $('#useSameWhatsAppEnvios').on('change', function(){
+            if($(this).is(':checked')){
+                $('#differentWhatsAppField').slideUp();
+            } else {
+                $('#differentWhatsAppField').slideDown();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
         let elementIdToDelete = null;
 
         // Quando clicar no botão de exclusão
@@ -227,7 +330,7 @@
             if (elementIdToDelete) {
                 // Substitua esta URL pela rota de exclusão do seu servidor
                 $.ajax({
-                    url: `<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/delete-company.php?id=${elementIdToDelete}`,
+                    url: `<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/delete.php?id=${elementIdToDelete}`,
                     type: 'DELETE',
                     success: function (response) {
                         window.location.href = '<?= INCLUDE_PATH_DASHBOARD; ?>empresas';
@@ -528,6 +631,22 @@ $(document).ready(function() {
             },
             uf: "required",
             cidade: "required",
+            // Validação dos canais personalizados
+            email_envios: {
+                required: {
+                    depends: function(element) {
+                        return !$("#useSameEmailEnvios").is(":checked") && $('.channel-checkbox[value="email"]').is(':checked');
+                    }
+                },
+                email: true
+            },
+            whatsapp_envios: {
+                required: {
+                    depends: function(element) {
+                        return !$("#useSameWhatsAppEnvios").is(":checked") && $('.channel-checkbox[value="whatsapp"]').is(':checked');
+                    }
+                }
+            }
         },
         messages: {
             name: {
@@ -554,6 +673,16 @@ $(document).ready(function() {
             },
             uf: "Por favor, selecione um Estado (UF)",
             cidade: "Por favor, selecione uma cidade",
+            email_envios: {
+                required: "Por favor, insira um e-mail para envios",
+                email: "Por favor, insira um e-mail válido",
+            },
+            whatsapp_envios: {
+                required: "Por favor, insira o WhatsApp para envios",
+            },
+            portal_envios: {
+                required: "Por favor, insira o subdomínio do portal para envios",
+            },
         },
         errorElement: "em",
         errorPlacement: function (error, element) {
@@ -593,7 +722,7 @@ $(document).ready(function() {
 
             // Realiza o AJAX para enviar os dados
             $.ajax({
-                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/update-company.php', // Substitua pelo URL do seu endpoint
+                url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/company/update.php', // Substitua pelo URL do seu endpoint
                 type: 'POST',
                 data: formData,
                 processData: false, // Impede que o jQuery processe os dados

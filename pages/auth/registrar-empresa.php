@@ -45,7 +45,7 @@
         // Se o usuário não for encontrado, redireciona para login ou erro
         session_destroy();
         session_start();
-        $_SESSION['msg'] = array(
+        $_SESSION['msg_login'] = array(
             'status' => 'error',
             'alert' => 'danger',
             'title' => 'Erro',

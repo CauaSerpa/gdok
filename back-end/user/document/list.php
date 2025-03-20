@@ -25,6 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $document_type_id = isset($_GET['documentTypeFilter']) ? intval($_GET['documentTypeFilter']) : null;
         $start_date = isset($_GET['startDateFilter']) ? $_GET['startDateFilter'] : null;
         $end_date = isset($_GET['endDateFilter']) ? $_GET['endDateFilter'] : null;
+        $status = isset($_GET['statusFilter']) ? $_GET['statusFilter'] : null;
 
         $queryTotal = "SELECT COUNT(*) as total 
                        FROM tb_documents
@@ -44,6 +45,40 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             $queryTotal .= " AND expiration_date >= :start_date";
         } elseif ($end_date) {
             $queryTotal .= " AND expiration_date <= :end_date";
+        }
+
+        if ($status) {
+            switch ($status) {
+                case 'overdue': // Apenas dias anteriores a hoje (ignora o dia atual)
+                    $queryTotal .= " AND expiration_date < CURDATE()";
+                    $queryTotal .= " AND status IN (1,2)";
+                    break;
+        
+                case 'today': // Apenas registros do dia de hoje, independentemente do horário
+                    $queryTotal .= " AND expiration_date >= CURDATE()"; // Começo do dia de hoje (00:00:00)
+                    $queryTotal .= " AND expiration_date < DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Antes do começo do próximo dia (00:00:00)
+                    $queryTotal .= " AND status = 1";
+                    break;
+        
+                case 'next': // Apenas registros entre amanhã e os próximos 7 dias (não inclui hoje)
+                    $queryTotal .= " AND expiration_date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Começa amanhã (00:00:00)
+                    $queryTotal .= " AND expiration_date < DATE_ADD(CURDATE(), INTERVAL 8 DAY)"; // Até 7 dias a partir de amanhã
+                    $queryTotal .= " AND status = 1";
+                    break;
+        
+                case 'in_day': // Apenas registros futuros (exclui o dia atual)
+                    $queryTotal .= " AND expiration_date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Começa amanhã (00:00:00)
+                    $queryTotal .= " AND status = 1";
+                    break;
+        
+                case 'all': // Todos os registros com status 1 ou 2, sem restrição de data
+                    $queryTotal .= " AND status IN (1,2)";
+                    break;
+        
+                case 'all_parametrized': // Últimos 7 dias a partir de hoje OU registros sem data definida
+                    $queryTotal .= " AND (expiration_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) OR expiration_date IS NULL)";
+                    break;
+            }
         }
 
         $stmtTotal = $conn->prepare($queryTotal);
@@ -77,10 +112,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                     d.observation,
                     c.name AS company_name,
                     t.name AS document_type_name
-                  FROM tb_documents d
-                  LEFT JOIN tb_companies c ON d.company_id = c.id
-                  LEFT JOIN tb_document_types t ON d.document_type_id = t.id
-                  WHERE d.user_id = :user_id AND status = 1";
+                FROM tb_documents d
+                LEFT JOIN tb_companies c ON d.company_id = c.id
+                LEFT JOIN tb_document_types t ON d.document_type_id = t.id
+                WHERE d.user_id = :user_id";
 
         if ($company_id) {
             $query .= " AND d.company_id = :company_id";
@@ -96,6 +131,40 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             $query .= " AND d.expiration_date >= :start_date";
         } elseif ($end_date) {
             $query .= " AND d.expiration_date <= :end_date";
+        }
+
+        if ($status) {
+            switch ($status) {
+                case 'overdue': // Apenas dias anteriores a hoje (ignora o dia atual)
+                    $query .= " AND d.expiration_date < CURDATE()";
+                    $query .= " AND d.status IN (1,2)";
+                    break;
+        
+                case 'today': // Apenas registros do dia de hoje, independentemente do horário
+                    $query .= " AND d.expiration_date >= CURDATE()"; // Começo do dia de hoje (00:00:00)
+                    $query .= " AND d.expiration_date < DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Antes do começo do próximo dia (00:00:00)
+                    $query .= " AND d.status = 1";
+                    break;
+        
+                case 'next': // Apenas registros entre amanhã e os próximos 7 dias (não inclui hoje)
+                    $query .= " AND d.expiration_date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Começa amanhã (00:00:00)
+                    $query .= " AND d.expiration_date < DATE_ADD(CURDATE(), INTERVAL 9 DAY)"; // Até 7 dias a partir de amanhã
+                    $query .= " AND d.status = 1";
+                    break;
+        
+                case 'in_day': // Apenas registros futuros (exclui o dia atual)
+                    $query .= " AND d.expiration_date >= DATE_ADD(CURDATE(), INTERVAL 1 DAY)"; // Começa amanhã (00:00:00)
+                    $query .= " AND d.status = 1";
+                    break;
+        
+                case 'all': // Todos os registros com status 1 ou 2, sem restrição de data
+                    $query .= " AND d.status IN (1,2)";
+                    break;
+        
+                case 'all_parametrized': // Últimos 7 dias a partir de hoje OU registros sem data definida
+                    $query .= " AND (d.expiration_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) OR d.expiration_date IS NULL)";
+                    break;
+            }
         }
 
         if (!empty($search)) {
@@ -162,7 +231,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             $texts = [
                 'overdue' => '<span class="badge bg-danger-subtle text-danger fw-semibold">Vencido</span>',
                 'today'   => '<span class="badge bg-warning-subtle text-warning fw-semibold">Vence hoje</span>',
-                'next'    => '<span class="badge bg-warning-subtle text-warning fw-semibold">Próximo ao vencimento</span>',
+                'next'    => '<span class="badge bg-warning-subtle text-warning fw-semibold">A vencer</span>',
                 'in_day'  => '<span class="badge bg-primary-subtle text-primary fw-semibold">Em dia</span>'
             ];
 
@@ -170,12 +239,17 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
             $status = $texts[$key];
 
-            $actions = '<button class="btn btn-sm bg-info-subtle fs-14 me-1 btn-renew" data-bs-toggle="tooltip" title="Informar Renovação" data-id="' . $row['id'] . '" data-name="' . $row['name'] . '">Informar Renovação</button>
+            $actions = '<button type="button" class="btn btn-sm bg-secondary-subtle fs-14 me-1 btn-view" data-id="' . $row['id'] . '" data-bs-toggle="tooltip" title="Visualizar Documento">
+                            <i class="mdi mdi-file-eye-outline fs-14 text-white text-primary"></i>
+                        </button>
+                        <button class="btn btn-sm bg-info-subtle fs-14 me-1 btn-renew" data-bs-toggle="tooltip" title="Informar Renovação" data-id="' . $row['id'] . '" data-name="' . $row['name'] . '">
+                            <i class="mdi mdi-file-document-plus-outline fs-14 text-primary"></i>
+                        </button>
                         <a href="' . INCLUDE_PATH_DASHBOARD . 'editar-documento/' . $row['id'] . '" class="btn btn-sm bg-primary-subtle me-1" data-bs-toggle="tooltip" title="Edit">
-                            <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
+                            <i class="mdi mdi-file-document-edit-outline fs-14 text-primary"></i>
                         </a>
                         <button type="button" class="btn btn-sm bg-danger-subtle btn-delete" data-bs-toggle="tooltip" title="Delete" data-id="' . $row['id'] . '" data-name="document">
-                            <i class="mdi mdi-delete-outline fs-14 text-danger"></i>
+                            <i class="mdi mdi-file-document-remove-outline fs-14 text-danger"></i>
                         </button>';
 
             $data[] = [

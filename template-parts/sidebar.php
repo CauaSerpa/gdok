@@ -6,7 +6,7 @@
         <div id="sidebar-menu">
 
             <div class="logo-box">
-                <a href="index.html" class="logo logo-light">
+                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/logo-sm.png" alt="" height="22">
                     </span>
@@ -14,7 +14,7 @@
                         <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/logo-light.png" alt="" height="50">
                     </span>
                 </a>
-                <a href="index.html" class="logo logo-dark">
+                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="<?= INCLUDE_PATH_DASHBOARD; ?>assets/images/logo-sm.png" alt="" height="22">
                     </span>
@@ -53,6 +53,9 @@
                     <div class="collapse" id="sidebarDocuments">
                         <ul class="nav-second-level">
                             <li>
+                                <a href="<?= INCLUDE_PATH_DASHBOARD; ?>documentos/ia" class="tp-link">Upload por IA</a>
+                            </li>
+                            <li>
                                 <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-documento" class="tp-link">Upload Manual</a>
                             </li>
                             <hr style="margin: .5rem 1.25rem;">
@@ -68,6 +71,38 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="menu-title">Envios</li>
+
+                <!-- <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>empresas-envios" class="tp-link">
+                        <i data-feather="archive"></i>
+                        <span> Empresas </span>
+                    </a>
+                </li> -->
+
+                <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>documentos-envios" class="tp-link">
+                        <i data-feather="upload"></i>
+                        <span> Documentos </span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>categorias-envios" class="tp-link">
+                        <i data-feather="grid"></i>
+                        <span> Categorias </span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>deptos-envios" class="tp-link">
+                        <i data-feather="share-2"></i>
+                        <span> Deptos </span>
+                    </a>
+                </li>
+
+                <li class="menu-title mt-2">Conta</li>
 
                 <li>
                     <a href="#sidebarOffice" data-bs-toggle="collapse">
@@ -86,8 +121,6 @@
                         </ul>
                     </div>
                 </li>
-
-                <li class="menu-title mt-2">Conta</li>
 
                 <li>
                     <a href="<?= INCLUDE_PATH_DASHBOARD; ?>configuracoes" class="tp-link">
@@ -109,6 +142,39 @@
         <!-- End Sidebar -->
 
         <div class="clearfix"></div>
+
+        <style>
+            .sidebar-footer {
+                position: absolute;
+                bottom: 2rem;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            li.list-inline-dots::after {
+                content: ""; /* ou qualquer outro caractere que represente o dot */
+                margin: 0 0.5rem;
+                color: #556474;
+                width: 4px;
+                height: 4px;
+                display: flex;
+                background: #556474 !important;
+                border-radius: 50%;
+            }
+        </style>
+
+        <!-- Footer da Sidebar -->
+        <div class="sidebar-footer">
+            <ul class="list-inline list-inline-dots d-flex align-items-center justify-content-center mb-0">
+                <li class="list-inline-item">
+                    <p class="text-reset fw-semibold mb-0"><?= $project['name']; ?></p>
+                </li>
+                <li class="list-inline-item list-inline-dots"></li>
+                <li class="list-inline-item">
+                    <p class="text-reset mb-0"><?= $project['version']; ?></p>
+                </li>
+            </ul>
+        </div>
 
     </div>
 </div>
