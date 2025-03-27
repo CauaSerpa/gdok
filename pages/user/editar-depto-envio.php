@@ -82,7 +82,7 @@
 
                         <!-- Nome do Depto de Envio -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nome do Depto de Envio</label>
+                            <label for="name" class="form-label">Nome do Depto de Envio*</label>
                             <input class="form-control" name="name" type="text" id="name" value="<?= $department['name']; ?>" maxlength="120" placeholder="Digite o Nome do Depto de Envio" required>
                         </div>
 

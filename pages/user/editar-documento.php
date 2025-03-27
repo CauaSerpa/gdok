@@ -57,7 +57,7 @@
     $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Consulta para buscar documentos cadastradas
-    $stmt = $conn->prepare("SELECT id, name FROM tb_document_types WHERE user_id = ? ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT id, name FROM tb_document_types WHERE user_id = ? ORDER BY name ASC");
     $stmt->execute([$_SESSION['user_id']]);
     $document_types = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -308,6 +308,11 @@
 
 <script>
 $(document).ready(function() {
+    $('#company').select2({
+        placeholder: 'Selecione uma Empresa',
+        allowClear: true,
+    });
+
     // Validação do Formulário
     $("#documentForm").validate({
         rules: {

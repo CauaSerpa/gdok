@@ -26,7 +26,7 @@
 
                         <!-- Nome da Caregoria de Envio -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nome da Depto de Envio</label>
+                            <label for="name" class="form-label">Nome da Depto de Envio*</label>
                             <input class="form-control" name="name" type="text" id="name" maxlength="120" placeholder="Digite o Nome da Depto de Envio" required>
                         </div>
 

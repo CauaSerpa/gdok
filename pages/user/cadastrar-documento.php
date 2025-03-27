@@ -5,7 +5,7 @@
     $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Consulta para buscar tipos de documentos cadastradas
-    $stmt = $conn->prepare("SELECT id, name, advance_notification, personalized_advance_notification FROM tb_document_types WHERE user_id = ? ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT id, name, advance_notification, personalized_advance_notification FROM tb_document_types WHERE user_id = ? ORDER BY name ASC");
     $stmt->execute([$_SESSION['user_id']]);
     $document_types = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -255,6 +255,11 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function() {
+    $('#company').select2({
+        placeholder: 'Selecione uma Empresa',
+        allowClear: true,
+    });
+
     // Validação do Formulário
     $("#documentForm").validate({
         rules: {

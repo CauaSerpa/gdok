@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             throw new Exception("Usuário não autenticado.");
         }
 
-        $stmt = $conn->prepare("SELECT id, name FROM tb_document_type_categories WHERE user_id = ?");
+        $stmt = $conn->prepare("SELECT id, name FROM tb_document_type_categories WHERE user_id = ? ORDER BY name ASC");
         $stmt->execute([$currentUserId]);
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

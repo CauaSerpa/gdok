@@ -60,13 +60,13 @@
 
                         <!-- Nome do Documento -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nome do Documento</label>
+                            <label for="name" class="form-label">Nome do Documento*</label>
                             <input class="form-control" name="name" type="text" id="name" maxlength="120" placeholder="Digite o Nome do Documento" required>
                         </div>
 
                         <!-- Categoria -->
                         <div class="mb-3">
-                            <label for="category" class="form-label">Categoria</label>
+                            <label for="category" class="form-label">Categoria*</label>
                             <div class="d-flex align-items-center">
                                 <select class="form-select w-25" name="category" id="category" required>
                                     <option value="" selected disabled>Selecione uma Categoria</option>
@@ -84,7 +84,7 @@
 
                                 <!-- Prioridade -->
                                 <div class="mb-3">
-                                    <label for="priority" class="form-label">Prioridade</label>
+                                    <label for="priority" class="form-label">Prioridade*</label>
                                     <select class="form-select" name="priority" id="priority" required>
                                         <option value="" selected disabled>Selecione a Prioridade</option>
                                         <option value="low">Baixa</option>
@@ -99,7 +99,7 @@
 
                                 <!-- Notificação Antecipada -->
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Notificação Antecipada</label>
+                                    <label for="email" class="form-label">Notificação Antecipada*</label>
         
                                     <div class="radio-options d-flex">
                                         <div class="options">

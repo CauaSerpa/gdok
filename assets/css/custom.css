@@ -1,0 +1,22 @@
+body {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+}
+#sidebar-menu > ul > li > a,
+.topbar-custom .topnav-menu .nav-link {
+    color: var(--text-color) !important;
+}
+.topbar-custom {
+    background-color: var(--header-color) !important;
+}
+.app-sidebar-menu {
+    background: var(--sidebar-color) !important;
+}
+.btn.btn-primary {
+    background-color: var(--button-color) !important;
+    border-color: var(--button-color) !important;
+}
+.btn.btn-primary:hover {
+    background-color: var(--hover-color) !important;
+    border-color: var(--hover-color) !important;
+}

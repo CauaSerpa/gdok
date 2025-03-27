@@ -1593,6 +1593,11 @@ $(document).ready(function(){
 
 <script>
     $(document).ready(function () {
+        var company = $('#companyFilter').val();
+        var documentType = $('#documentTypeFilter').val();
+        var startDate = $('#startDateFilter').val();
+        var endDate = $('#endDateFilter').val();
+
         const table = $('#documentsTable').DataTable({
             processing: true,
             serverSide: true,
@@ -1603,11 +1608,17 @@ $(document).ready(function(){
                 url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/document/list.php',
                 type: 'GET',
                 data: function (d) {
-                    d.companyFilter = $('#companyFilter').val();
-                    d.documentTypeFilter = $('#documentTypeFilter').val();
-                    d.startDateFilter = $('#startDateFilter').val();
-                    d.endDateFilter = $('#endDateFilter').val();
-                    d.statusFilter = $('#statusFilter').val();
+                    // Se nenhum outro filtro for aplicado, usar "all_parametrized"
+                    if (!company && !documentType && !startDate && !endDate) {
+                        d.statusFilter = 'all_parametrized';
+                    } else {
+                        d.statusFilter = $('#statusFilter').val();
+                    }
+                    // Sempre enviar os demais filtros também
+                    d.companyFilter = company;
+                    d.documentTypeFilter = documentType;
+                    d.startDateFilter = startDate;
+                    d.endDateFilter = endDate;
                 },
                 dataSrc: function (json) {
                     return json.data;

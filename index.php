@@ -1,11 +1,14 @@
 <?php
-    // ini_set('display_errors', 1);
-    // ini_set('display_startup_errors', 1);
-    // error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 
     session_start();
     ob_start();
     include('./config.php');
+
+    // Cria variavel $permission
+    $permission = null;
 
     if (isset($_SESSION['user_id']) || isset($_SESSION['finalize_registration_user_id'])) {
         $user['id'] = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : $_SESSION['finalize_registration_user_id'];
@@ -39,6 +42,7 @@ function getPageTitle($url) {
         'configuracoes'             => 'Configurações',
         'portal'                    => 'Portal',
         'c'                         => 'Categorias',
+        'aparencia'                 => 'Aparência',
     ];
 
     // Se a URL estiver vazia, retorna um título padrão
@@ -202,6 +206,37 @@ $title = getPageTitle($url);
         <?php elseif ($url == "home"): ?>
         <?php endif; ?>
 
+        <?php if (isset($permission['role']) && $permission['role'] == 0): ?>
+            <!-- Custom css -->
+            <?php
+                // Consulta para buscar as cores definidas no template
+                $stmt = $conn->prepare("SELECT * FROM tb_template_appearance WHERE id = ?");
+                $stmt->execute([1]);
+                $appearance = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                // Definindo valores padrão caso algum campo não esteja configurado
+                $bg_color       = isset($appearance['bg_color'])        ? $appearance['bg_color']       : '#007bff';
+                $header_color   = isset($appearance['header_color'])    ? $appearance['header_color']   : '#6c757d';
+                $sidebar_color  = isset($appearance['sidebar_color'])   ? $appearance['sidebar_color']  : '#ffffff';
+                $text_color     = isset($appearance['text_color'])      ? $appearance['text_color']     : '#212529';
+                $button_color   = isset($appearance['button_color'])    ? $appearance['button_color']   : '#212529';
+                $hover_color    = isset($appearance['hover_color'])     ? $appearance['hover_color']    : '#212529';
+            ?>
+
+            <!-- Injetando as variáveis de cor no CSS através de custom properties -->
+            <style>
+                :root {
+                    --background-color: <?= $bg_color; ?>;
+                    --header-color: <?= $header_color; ?>;
+                    --sidebar-color: <?= $sidebar_color; ?>;
+                    --text-color: <?= $text_color; ?>;
+                    --button-color: <?= $button_color; ?>;
+                    --hover-color: <?= $hover_color; ?>;
+                }
+            </style>
+
+            <link href="<?= INCLUDE_PATH_DASHBOARD; ?>assets/css/custom.css" rel="stylesheet" type="text/css" />
+        <?php endif; ?>
     </head>
 
     <body <?= ($tab == "auth" || $url == "auth") ? 'class="bg-primary-subtle"' : (($url == "portal") ? 'data-menu-color="light" data-sidebar="hidden"' : 'data-menu-color="light" data-sidebar="default"'); ?>>
@@ -213,9 +248,20 @@ $title = getPageTitle($url);
             } elseif ($tab == "auth" || $url == "auth") {
                 include('templates/auth.php');
             } elseif ($permission['role'] == 3) {
+                $currentDomain = $_SERVER['HTTP_HOST'];
+
+                if (strpos($currentDomain, 'envios.') === false) {
+                    // Redireciona para o subdomínio correto "envios."
+                    $newUrl = "https://envios." . str_replace('painel.', '', $currentDomain) . $_SERVER['REQUEST_URI'];
+                    header("Location: $newUrl");
+                    exit;
+                }
+
                 include('templates/portal-cliente.php');
             } elseif ($tab == "portal" || $url == "portal") {
                 include('templates/portal.php');
+            } elseif ($permission['role'] == 0) {
+                include('templates/admin.php');
             } else {
                 include('templates/dashboard.php');
             }

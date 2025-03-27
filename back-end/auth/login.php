@@ -41,7 +41,7 @@
                 $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Erro', 'message' => 'Por favor, verifique seu e-mail para ativar sua conta.', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email');
                 echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email']);
                 exit();
-            } else if (!isset($user['office_id']) && empty($user['office_id'])) { // Verifica se o usuário está associado a uma empresa
+            } else if (!isset($user['office_id']) && empty($user['office_id']) && $user['role'] !== 0) { // Verifica se o usuário está associado a uma empresa caso o usuario nao seja um administrador
                 // Nao esta associado a nenhuma empresa, redireciona para página de tipo de usuario
                 $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Erro', 'message' => 'Por favor, finalize seu cadastro para acessar o ' . $project['name'] . '.', 'redirect' => INCLUDE_PATH_AUTH . 'tipo-de-usuario');
                 echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'tipo-de-usuario']);
