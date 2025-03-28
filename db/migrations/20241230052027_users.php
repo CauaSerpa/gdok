@@ -15,6 +15,7 @@ final class Users extends AbstractMigration
         $table = $this->table('tb_users', ['identity' => true, 'signed' => false]);
         $table
             ->addColumn('firstname', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('role', 'integer')
             ->addColumn('lastname', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('email', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('password', 'string', ['limit' => 255, 'null' => false])
