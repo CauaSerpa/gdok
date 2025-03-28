@@ -2,7 +2,7 @@
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
 
-    require 'lib/vendor/autoload.php'; // Ajuste conforme o seu caminho para o autoload do Composer
+    require __DIR__ . '/../../vendor/autoload.php';
 
     function sendMail($name, $email, $subject, $content) {
         // Informações para PHPMailer

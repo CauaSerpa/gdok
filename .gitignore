@@ -1,7 +1,6 @@
 .env
 .env.gdok
 app.zip
-vendor/
 new-vendors-backup/
 *.html
 todo
