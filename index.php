@@ -43,6 +43,8 @@ function getPageTitle($url) {
         'portal'                    => 'Portal',
         'c'                         => 'Categorias',
         'aparencia'                 => 'Aparência',
+        'usuarios'                  => 'Usuários',
+        'usuario-bloqueado'         => 'Usuário Bloqueado',
     ];
 
     // Se a URL estiver vazia, retorna um título padrão

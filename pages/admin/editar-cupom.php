@@ -30,12 +30,12 @@ if ($coupon['discount_type'] === 'fixed') {
 <div class="container">
     <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
         <div class="flex-grow-1">
-            <h4 class="fs-18 fw-semibold m-0">Editar Cupom</h4>
+            <h4 class="fs-18 fw-semibold m-0">Editar cupom de desconto</h4>
         </div>
         <div class="text-end">
             <ol class="breadcrumb m-0 py-0">
                 <li class="breadcrumb-item"><a href="<?= INCLUDE_PATH_DASHBOARD; ?>cupons">Cupons</a></li>
-                <li class="breadcrumb-item active">Editar Cupom</li>
+                <li class="breadcrumb-item active">Editar cupom</li>
             </ol>
         </div>
     </div>
@@ -44,7 +44,7 @@ if ($coupon['discount_type'] === 'fixed') {
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Edição de Cupom</h5>
+                    <h5 class="card-title mb-0">Edição de cupom</h5>
                 </div>
                 <div class="card-body">
                     <form id="couponEditForm">
@@ -62,11 +62,15 @@ if ($coupon['discount_type'] === 'fixed') {
                                     <input class="form-control" name="code" type="text" id="code" placeholder="Digite o código do cupom" required value="<?= htmlspecialchars($coupon['code']); ?>">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <!-- Vigência -->
                                 <div class="mb-3">
-                                    <label for="validity" class="form-label">Vigência*</label>
-                                    <input class="form-control" name="validity" type="date" id="validity" required value="<?= htmlspecialchars($coupon['validity']); ?>">
+                                    <label for="validity_start" class="form-label">Vigência*</label>
+                                    <div class="input-group mb-3">
+                                        <input class="form-control" name="validity_start" type="date" id="validity_start" required value="<?= htmlspecialchars($coupon['validity_start']); ?>">
+                                        <span class="input-group-text">à</span>
+                                        <input class="form-control" name="validity_end" type="date" id="validity_end" required value="<?= htmlspecialchars($coupon['validity_end']); ?>">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -106,6 +110,20 @@ if ($coupon['discount_type'] === 'fixed') {
                             </div>
                         </div>
 
+                        <!-- Módulos Acessíveis (Select2 Multiple) -->
+                        <div class="mb-3">
+                            <label for="accessibleModules" class="form-label">Módulos Acessíveis</label>
+                            <select class="form-select" id="accessibleModules" name="accessibleModules[]" multiple="multiple" required>
+                                <?php $selectedModules = json_decode($coupon['accessible_modules'], true) ?? []; ?>
+                                <option value="gdok_entregas" disabled <?= in_array('gdok_entregas', $selectedModules) ? 'selected' : ''; ?>>Gdok Entregas</option>
+                                <option value="gdok_envios" <?= in_array('gdok_envios', $selectedModules) ? 'selected' : ''; ?>>Gdok Envios</option>
+                                <option value="gdok_holerites" disabled <?= in_array('gdok_holerites', $selectedModules) ? 'selected' : ''; ?>>Gdok Holerites</option>
+                                <option value="gdok_honorarios" disabled <?= in_array('gdok_honorarios', $selectedModules) ? 'selected' : ''; ?>>Gdok Honorários</option>
+                                <option value="gdok_vencimento" <?= in_array('gdok_vencimento', $selectedModules) ? 'selected' : ''; ?>>Gdok Vencimento</option>
+                            </select>
+                            <small class="form-text text-muted">Selecione os módulos que serão disponibilizados para este cupom.</small>
+                        </div>
+
                         <div class="d-flex align-items-center justify-content-between">
                             <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cupons" class="btn btn-light">Voltar</a>
                             <div>
@@ -127,11 +145,22 @@ if ($coupon['discount_type'] === 'fixed') {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function() {
     // Aplica máscara ao campo de preço
     $('#price').mask("#.##0,00", {reverse: true});
+    $('#percent').mask("#0.00", {reverse: true});
+
+    // Inicializa o Select2 para o campo de módulos
+    $('#accessibleModules').select2({
+        placeholder: 'Selecione os módulos disponíveis',
+        width: '100%',
+        theme: 'bootstrap-5'
+    });
 
     // Alterna os inputs de desconto fixo e percentual
     $('input[name="discount_type"]').on('change', function() {
@@ -151,7 +180,10 @@ $(document).ready(function() {
                 required: true,
                 minlength: 2
             },
-            validity: {
+            validity_start: {
+                required: true
+            },
+            validity_end: {
                 required: true
             },
             code: {
@@ -168,6 +200,9 @@ $(document).ready(function() {
                 },
                 min: 0,
                 max: 100
+            },
+            accessibleModules: {
+                required: true
             }
         },
         messages: {
@@ -175,8 +210,11 @@ $(document).ready(function() {
                 required: "Por favor, insira o nome do cupom.",
                 minlength: "O nome deve ter pelo menos 2 caracteres."
             },
-            validity: {
-                required: "Por favor, informe a data de vigência."
+            validity_start: {
+                required: "Por favor, informe a data de inicio de vigência."
+            },
+            validity_end: {
+                required: "Por favor, informe a data de fim de vigência."
             },
             code: {
                 required: "Por favor, informe o código do cupom."
@@ -188,6 +226,9 @@ $(document).ready(function() {
                 required: "Por favor, informe a porcentagem do cupom.",
                 min: "Mínimo de 0%.",
                 max: "Máximo de 100%."
+            },
+            accessibleModules: {
+                required: "Selecione pelo menos um módulo acessível."
             }
         },
         errorElement: "em",

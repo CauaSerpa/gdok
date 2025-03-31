@@ -52,7 +52,8 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Vigência</th>
+                            <th>Inicio de Vigência</th>
+                            <th>Fim de Vigência</th>
                             <th>Desconto</th>
                             <th>Código</th>
                             <th>Ações</th>
@@ -138,7 +139,8 @@ $(document).ready(function () {
         },
         columns: [
             { data: 'name', width: '25%' },
-            { data: 'validity', width: '20%' },
+            { data: 'validity_start', width: '10%' },
+            { data: 'validity_end', width: '10%' },
             { data: 'discount', width: '20%', className: 'text-center' },
             { data: 'code', width: '20%', className: 'text-center' },
             { data: 'actions', width: '15%', className: 'text-center', orderable: false, searchable: false }
@@ -159,54 +161,70 @@ $(document).ready(function () {
         info: false
     });
 
-    // Paginação customizada
-    let currentPage = 1;
-    let totalPages = 1;
-    function updatePagination() {
-        const info = table.page.info();
-        totalPages = info.pages;
-        $('#info').text(`${currentPage} de ${totalPages}`);
-        $('#prevPage').parent().toggleClass('disabled', currentPage === 1);
-        $('#nextPage').parent().toggleClass('disabled', currentPage === totalPages);
-        $('#pagination').find('.page-number').remove();
-        for (let i = 1; i <= totalPages; i++) {
-            const isActive = (i === currentPage) ? 'active' : '';
-            $('#pagination').find('.liNextPage').before(
-                `<li class="page-item ${isActive}">
-                    <a class="page-link rounded-2 me-2 page-number" href="#" data-page="${i}">${i}</a>
-                 </li>`
-            );
+        // Custom pagination control
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // Função para atualizar os controles de paginação
+        function updatePagination() {
+            const info = table.page.info();
+            totalPages = info.pages;
+
+            // Atualiza a informação de páginas
+            $('#info').text(`${currentPage} de ${totalPages}`);
+
+            // Atualiza os estados dos botões de "Anterior" e "Próxima"
+            $('#prevPage').parent().toggleClass('disabled', currentPage === 1);
+            $('#nextPage').parent().toggleClass('disabled', currentPage === totalPages);
+
+            // Limpa números de páginas existentes
+            $('#pagination').find('.page-number').remove();
+
+            // Adiciona os números de páginas dinamicamente
+            for (let i = 1; i <= totalPages; i++) {
+                const isActive = (i === currentPage) ? 'active' : '';
+                $('#pagination').find('.liNextPage').before(
+                    `<li class="page-item ${isActive}">
+                        <a class="page-link rounded-2 me-2 page-number" href="#" data-page="${i}">${i}</a>
+                    </li>`
+                );
+            }
         }
-    }
 
-    $('#pagination').on('click', '.page-number', function (e) {
-        e.preventDefault();
-        currentPage = parseInt($(this).data('page'));
-        table.page(currentPage - 1).draw(false);
-        updatePagination();
-    });
-
-    $('#prevPage').on('click', function (e) {
-        e.preventDefault();
-        if (currentPage > 1) {
-            currentPage--;
-            table.page('previous').draw(false);
+        // Clique no número da página
+        $('#pagination').on('click', '.page-number', function (e) {
+            e.preventDefault();
+            currentPage = parseInt($(this).data('page'));
+            table.page(currentPage - 1).draw(false);
             updatePagination();
-        }
-    });
+        });
 
-    $('#nextPage').on('click', function (e) {
-        e.preventDefault();
-        if (currentPage < totalPages) {
-            currentPage++;
-            table.page('next').draw(false);
+        // Clique no botão "Anterior"
+        $('#prevPage').on('click', function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                table.page('previous').draw(false);
+                updatePagination();
+            }
+        });
+
+        // Clique no botão "Próxima"
+        $('#nextPage').on('click', function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                table.page('next').draw(false);
+                updatePagination();
+            }
+        });
+
+        // Atualiza a paginação após o carregamento da tabela
+        table.on('draw', function () {
             updatePagination();
-        }
-    });
+        });
 
-    table.on('draw', function () {
+        // Atualização inicial da paginação
         updatePagination();
-    });
-    updatePagination();
 });
 </script>

@@ -23,9 +23,11 @@ final class CreateCouponsTable extends AbstractMigration
         $table = $this->table('tb_coupons');
         $table
             ->addColumn('name', 'string', ['limit' => 255])
-            ->addColumn('validity', 'date')
+            ->addColumn('validity_start', 'date')
+            ->addColumn('validity_end', 'date')
             ->addColumn('discount_type', 'enum', ['values' => ['fixed', 'percentage']])
             ->addColumn('discount_value', 'decimal', ['precision' => 10, 'scale' => 2, 'default' => 0])
+            ->addColumn('accessible_modules', 'text', ['null' => true])
             ->addColumn('code', 'string', ['limit' => 100])
             ->addTimestamps()
             ->create();

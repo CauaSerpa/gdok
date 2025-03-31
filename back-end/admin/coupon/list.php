@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $totalRecords = $stmtTotal->fetchColumn();
 
         // Consulta com filtro de busca, se aplicável
-        $query = "SELECT id, name, validity, discount_type, discount_value, code FROM tb_coupons";
+        $query = "SELECT id, name, validity_start, validity_end, discount_type, discount_value, code FROM tb_coupons";
         if (!empty($search)) {
             $query .= " WHERE name LIKE :search OR code LIKE :search";
         }
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             if ($row['discount_type'] === 'fixed') {
                 $discount = 'R$ ' . number_format($row['discount_value'], 2, ',', '.');
             } else {
-                $discount = $row['discount_value'] . '%';
+                $discount = number_format($row['discount_value'], 2, ',', '.') . '%';
             }
             $actions = '<a href="' . INCLUDE_PATH_DASHBOARD . 'editar-cupom/' . $row['id'] . '" class="btn btn-sm bg-primary-subtle me-1" data-bs-toggle="tooltip" title="Editar">
                             <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
@@ -53,12 +53,13 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                         </button>';
 
             $data[] = [
-                'id'       => $row['id'],
-                'name'     => $row['name'],
-                'validity' => date("d/m/Y", strtotime($row['validity'])),
-                'discount' => $discount,
-                'code'     => $row['code'],
-                'actions'  => $actions
+                'id'                => $row['id'],
+                'name'              => $row['name'],
+                'validity_start'    => date("d/m/Y", strtotime($row['validity_start'])),
+                'validity_end'      => date("d/m/Y", strtotime($row['validity_end'])),
+                'discount'          => $discount,
+                'code'              => $row['code'],
+                'actions'           => $actions
             ];
         }
 

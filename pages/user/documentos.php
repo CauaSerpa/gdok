@@ -1593,11 +1593,6 @@ $(document).ready(function(){
 
 <script>
     $(document).ready(function () {
-        var company = $('#companyFilter').val();
-        var documentType = $('#documentTypeFilter').val();
-        var startDate = $('#startDateFilter').val();
-        var endDate = $('#endDateFilter').val();
-
         const table = $('#documentsTable').DataTable({
             processing: true,
             serverSide: true,
@@ -1608,11 +1603,20 @@ $(document).ready(function(){
                 url: '<?= INCLUDE_PATH_DASHBOARD; ?>back-end/user/document/list.php',
                 type: 'GET',
                 data: function (d) {
-                    // Se nenhum outro filtro for aplicado, usar "all_parametrized"
+                    var status = $('#statusFast').val();
+                    var company = $('#companyFilter').val();
+                    var documentType = $('#documentTypeFilter').val();
+                    var startDate = $('#startDateFilter').val();
+                    var endDate = $('#endDateFilter').val();
+
                     if (!company && !documentType && !startDate && !endDate) {
-                        d.statusFilter = 'all_parametrized';
-                    } else {
+                        // Se nenhum outro filtro for aplicado, usar "all_parametrized" padrao do status rapido
+                        d.statusFilter = $('#statusFast').val();
+                    } else if (company || documentType || startDate || endDate) {
+                        // Se pelo menos um filtro for aplicado, usar status do filtro
                         d.statusFilter = $('#statusFilter').val();
+                    } else {
+                        d.statusFilter = $('#statusFast').val();
                     }
                     // Sempre enviar os demais filtros também
                     d.companyFilter = company;

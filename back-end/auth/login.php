@@ -36,7 +36,19 @@
             $_SESSION['finalize_registration_email'] = $user['email'];
 
             // Verifica se o e-mail foi ativado
-            if ($user['active_status'] == 0) {
+            if ($user['status'] == 0) {
+                unset($_SESSION['finalize_registration_user_id']);
+                unset($_SESSION['finalize_registration_email']);
+
+                // Se a ativação foi feita, salva o usuário na sessão
+                $_SESSION['blocked_user_id'] = $user['id'];
+                $_SESSION['blocked_email'] = $user['email'];
+
+                // E-mail não ativado, redireciona para página de verificação
+                $_SESSION['msg'] = array('status' => 'error', 'alert' => 'danger', 'title' => 'Erro', 'message' => 'Sua conta foi bloqueada por um administrador, entre em contato com nosso suporte para mais informações.', 'redirect' => INCLUDE_PATH_AUTH . 'usuario-bloqueado');
+                echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'usuario-bloqueado']);
+                exit();
+            } else if ($user['active_status'] == 0) {
                 // E-mail não ativado, redireciona para página de verificação
                 $_SESSION['msg'] = array('status' => 'success', 'alert' => 'primary', 'title' => 'Erro', 'message' => 'Por favor, verifique seu e-mail para ativar sua conta.', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email');
                 echo json_encode(['status' => 'success', 'redirect' => INCLUDE_PATH_AUTH . 'verificar-email']);

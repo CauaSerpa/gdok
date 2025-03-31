@@ -20,10 +20,10 @@ class AdminUser extends AbstractSeed
         $dataAdminUser = [
             [
                 'role'          => 0,
-                'fisrtname'     => 'Admin',
+                'firstname'     => 'Admin',
                 'lastname'      => '001',
                 'email'         => 'admin@admin.com',
-                'text_color'    => '$2y$10$bsVxUdsFhORHKzyvcgZLWuiu8rlfRqWT9/2h6WZ.cPvYRL7ld/Z.G',
+                'password'      => '$2y$10$bsVxUdsFhORHKzyvcgZLWuiu8rlfRqWT9/2h6WZ.cPvYRL7ld/Z.G',
                 'active_status' => 1,
             ]
         ];

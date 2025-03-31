@@ -40,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $query = "
             SELECT 
                 u.id, 
+                u.status, 
                 u.firstname, 
                 u.lastname, 
                 o.name AS office_name, 
@@ -71,11 +72,14 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $name = $row['firstname'] . " " . $row['lastname'];
 
-            $status = $row['active_status'] ? 'Ativo' : 'Inativo';
+            $status = $row['status'] ? 'Ativo' : 'Inativo';
 
-            $actions = '<button type="button" class="btn btn-sm bg-primary-subtle fs-14 me-1 btn-view" data-id="' . $row['id'] . '" data-bs-toggle="tooltip" title="Visualizar Usuário">
-                            <i class="mdi mdi-eye-outline fs-14 text-primary"></i>
-                        </button>';
+            $actions = '<button type="button" class="btn btn-sm bg-info-subtle fs-14 me-1 btn-view" data-id="' . $row['id'] . '" data-bs-toggle="tooltip" title="Visualizar Usuário">
+                            <i class="mdi mdi-eye-outline fs-14 text-info"></i>
+                        </button>
+                        <a href="' . INCLUDE_PATH_DASHBOARD . 'editar-usuario/' . $row['id'] . '" class="btn btn-sm bg-primary-subtle me-1" data-bs-toggle="tooltip" title="Editar">
+                            <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
+                        </a>';
 
             $data[] = [
                 'id'            => $row['id'],

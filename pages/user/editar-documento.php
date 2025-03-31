@@ -106,7 +106,7 @@
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-empresa" class="btn btn-link" onclick="confirm('Você será redirecionado para a página de cadastro de empresa. Deseja continuar?')">
+                                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-empresa" class="btn btn-link" onclick="return confirm('Você será redirecionado para a página de cadastro de empresa. Deseja continuar?')">
                                             <i class="mdi mdi-plus fs-16 align-middle"></i>
                                             Criar Empresa
                                         </a>
@@ -129,7 +129,7 @@
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-tipo-documento" class="btn btn-link" onclick="confirm('Você será redirecionado para a página de cadastro de tipo de documento. Deseja continuar?')">
+                                        <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cadastrar-tipo-documento" class="btn btn-link" onclick="return confirm('Você será redirecionado para a página de cadastro de tipo de documento. Deseja continuar?')">
                                             <i class="mdi mdi-plus fs-16 align-middle"></i>
                                             Criar Tipo de Documento
                                         </a>

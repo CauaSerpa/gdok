@@ -1,13 +1,13 @@
 <div class="container">
     <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
         <div class="flex-grow-1">
-            <h4 class="fs-18 fw-semibold m-0">Cadastrar Cupom</h4>
+            <h4 class="fs-18 fw-semibold m-0">Cadastrar cupom de desconto</h4>
         </div>
     
         <div class="text-end">
             <ol class="breadcrumb m-0 py-0">
                 <li class="breadcrumb-item"><a href="<?= INCLUDE_PATH_DASHBOARD; ?>cupons">Cupons</a></li>
-                <li class="breadcrumb-item active">Cadastrar Cupom</li>
+                <li class="breadcrumb-item active">Cadastrar cupom</li>
             </ol>
         </div>
     </div>
@@ -16,7 +16,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Cadastro de Cupom</h5>
+                    <h5 class="card-title mb-0">Cadastro de cupom</h5>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -35,11 +35,15 @@
                                     <input class="form-control" name="code" type="text" id="code" placeholder="Digite o código do cupom" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <!-- Vigência -->
                                 <div class="mb-3">
-                                    <label for="validity" class="form-label">Vigência*</label>
-                                    <input class="form-control" name="validity" type="date" id="validity" required>
+                                    <label for="validity_start" class="form-label">Vigência*</label>
+                                    <div class="input-group mb-3">
+                                        <input class="form-control" name="validity_start" type="date" id="validity_start" required>
+                                        <span class="input-group-text">à</span>
+                                        <input class="form-control" name="validity_end" type="date" id="validity_end" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -81,6 +85,19 @@
                             </div>
                         </div>
 
+                        <!-- Módulos Acessíveis (Select2 Multiple) -->
+                        <div class="mb-3">
+                            <label for="accessibleModules" class="form-label">Módulos Acessíveis</label>
+                            <select class="form-select" id="accessibleModules" name="accessibleModules[]" multiple="multiple" required>
+                                <option value="gdok_entregas" disabled>Gdok Entregas</option>
+                                <option value="gdok_envios">Gdok Envios</option>
+                                <option value="gdok_holerites" disabled>Gdok Holerites</option>
+                                <option value="gdok_honorarios" disabled>Gdok Honorários</option>
+                                <option value="gdok_vencimento">Gdok Vencimentos</option>
+                            </select>
+                            <small class="form-text text-muted">Selecione os módulos que serão disponibilizados para este cupom.</small>
+                        </div>
+
                         <div class="d-flex align-items-center justify-content-between">
                             <a href="<?= INCLUDE_PATH_DASHBOARD; ?>cupons" class="btn btn-light">Voltar</a>
                             <div>
@@ -102,12 +119,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function() {
     // Aplica máscara ao campo de preço
     $('#price').mask("#.##0,00", {reverse: true});
-    
+    $('#percent').mask("#0.00", {reverse: true});
+
+    // Inicializa o Select2 para o campo de módulos
+    $('#accessibleModules').select2({
+        placeholder: 'Selecione os módulos disponíveis',
+        width: '100%',
+        theme: 'bootstrap-5'
+    });
+
     // Alterna os inputs de desconto fixo e porcentagem
     $('input[name="discount_type"]').on('change', function() {
         if ($(this).val() == 'fixed') {
@@ -126,7 +154,10 @@ $(document).ready(function() {
                 required: true,
                 minlength: 2
             },
-            validity: {
+            validity_start: {
+                required: true
+            },
+            validity_end: {
                 required: true
             },
             code: {
@@ -143,6 +174,9 @@ $(document).ready(function() {
                 },
                 min: 0,
                 max: 100
+            },
+            accessibleModules: {
+                required: true
             }
         },
         messages: {
@@ -150,8 +184,11 @@ $(document).ready(function() {
                 required: "Por favor, insira o nome do cupom.",
                 minlength: "O nome deve ter pelo menos 2 caracteres."
             },
-            validity: {
-                required: "Por favor, informe a data de vigência."
+            validity_start: {
+                required: "Por favor, informe a data de inicio de vigência."
+            },
+            validity_end: {
+                required: "Por favor, informe a data de fim de vigência."
             },
             code: {
                 required: "Por favor, informe o código do cupom."
@@ -163,6 +200,9 @@ $(document).ready(function() {
                 required: "Por favor, informe a porcentagem do cupom.",
                 min: "Mínimo de 0%.",
                 max: "Máximo de 100%."
+            },
+            accessibleModules: {
+                required: "Selecione pelo menos um módulo acessível."
             }
         },
         errorElement: "em",

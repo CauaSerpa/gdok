@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $document_type_id = isset($_GET['documentTypeFilter']) ? intval($_GET['documentTypeFilter']) : null;
         $start_date = isset($_GET['startDateFilter']) ? $_GET['startDateFilter'] : null;
         $end_date = isset($_GET['endDateFilter']) ? $_GET['endDateFilter'] : null;
-        $status = isset($_GET['statusFilter']) ? $_GET['statusFilter'] : 'all_parametrized';
+        $status = !empty($_GET['statusFilter']) ? $_GET['statusFilter'] : 'all';
 
         $queryTotal = "SELECT COUNT(*) as total 
                        FROM tb_documents

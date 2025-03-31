@@ -63,6 +63,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="<?= INCLUDE_PATH_DASHBOARD; ?>clientes" class="tp-link">
+                        <i data-feather="book-open"></i>
+                        <span> Clientes </span>
+                    </a>
+                </li>
+
                 <li class="menu-title mt-2">Conta</li>
 
                 <li>

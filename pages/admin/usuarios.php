@@ -124,49 +124,49 @@
                                         <!-- Nome do Escritório -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Nome do Escritório:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="username">Nome do Escritório</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeName">Nome do Escritório</p>
                                         </div>
                                         <!-- Email do Escritório -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Email do Escritório:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="email">Email do Escritório</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeEmail">Email do Escritório</p>
                                         </div>
                                         <!-- Telefone do Escritório -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Telefone do Escritório:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="phone">Telefone do Escritório</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officePhone">Telefone do Escritório</p>
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <!-- CEP -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">CEP:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="cep">CEP do Escritório</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeCep">CEP do Escritório</p>
                                         </div>
                                         <!-- Endereço -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Endereço:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="address">Endereço do Escritório</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeAddress">Endereço do Escritório</p>
                                         </div>
                                         <!-- Número -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Número:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="addressNumber">Número</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeAddressNumber">Número</p>
                                         </div>
                                         <!-- Complemento -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Complemento:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="complement">Complemento</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeComplement">Complemento</p>
                                         </div>
                                         <!-- Cidade -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Cidade:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="city">Cidade</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeCity">Cidade</p>
                                         </div>
                                         <!-- Estado -->
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold mb-0">Estado:</label>
-                                            <p class="form-control-plaintext fs-16 p-0" id="state">Estado</p>
+                                            <p class="form-control-plaintext fs-16 p-0" id="officeState">Estado</p>
                                         </div>
                                     </div>
                                 </div>
@@ -180,6 +180,7 @@
                                                     <tr>
                                                         <th scope="col">Nome da Empresa</th>
                                                         <th scope="col">Nome do Responsável</th>
+                                                        <th scope="col">Documento</th>
                                                         <th scope="col">Documentos Cadastrados</th>
                                                         <th scope="col">Data de Cadastro</th>
                                                     </tr>
@@ -188,6 +189,7 @@
                                                     <tr>
                                                         <td>Nome da Empresa</td>
                                                         <td>Nome do Responsável</td>
+                                                        <td>Documento</td>
                                                         <td>Documentos Cadastrados</td>
                                                         <td>Data de Cadastro</td>
                                                     </tr>
@@ -283,14 +285,45 @@ $(document).ready(function(){
             success: function(response) {
                 if(response.status === "success") {
                     // Preenche os campos do modal com os dados retornados
-                    $('#empresa').text(response.data.company);
-                    $('#dataVencimento').text(response.data.expiration_date);
-                    $('#nomeDocumento').text(response.data.name);
+                    // Dados do usuário
+                    $('#username').text(response.data.user.name);
+                    $('#email').text(response.data.user.email);
+                    $('#phone').text(response.data.user.phone);
+                    $('#dateCreate').text(response.data.user.dateCreate);
+                    $('#cep').text(response.data.user.cep);
+                    $('#address').text(response.data.user.address);
+                    $('#addressNumber').text(response.data.user.addressNumber);
+                    $('#complement').text(response.data.user.complement);
+                    $('#city').text(response.data.user.city);
+                    $('#state').text(response.data.user.state);
                     
-                    $('#observacao').text(response.data.observation);
-                    $('#tipoDocumento').text(response.data.document_type);
-                    $('#notificacaoAntecipada').text(response.data.advance_notification);
-                    $('#status').html(response.data.status);
+                    // Dados do escritório
+                    $('#officeName').text(response.data.office.name);
+                    $('#officeEmail').text(response.data.office.email);
+                    $('#officePhone').text(response.data.office.phone);
+                    $('#officeCep').text(response.data.office.cep);
+                    $('#officeAddress').text(response.data.office.address);
+                    $('#officeAddressNumber').text(response.data.office.addressNumber);
+                    $('#officeComplement').text(response.data.office.complement);
+                    $('#officeCity').text(response.data.office.city);
+                    $('#officeState').text(response.data.office.state);
+
+                    // Preenche a tabela com os dados das empresas gerenciadas
+                    var companiesHTML = '';
+                    if(response.data.companies && response.data.companies.length > 0){
+                        $.each(response.data.companies, function(i, company){
+                            companiesHTML += '<tr>'+
+                                '<td>' + company.name + '</td>'+
+                                '<td>' + company.responsible_name + '</td>'+
+                                '<td>' + company.document + '</td>'+
+                                '<td>' + company.documents_count + '</td>'+
+                                '<td>' + company.date_create + '</td>'+
+                            '</tr>';
+                        });
+                    } else {
+                        companiesHTML = '<tr><td colspan="5">Nenhuma empresa cadastrada.</td></tr>';
+                    }
+                    $('#managed-companies table tbody').html(companiesHTML);
                     
                     // Abre o modal após preencher os dados
                     $('#userModal').modal('show');

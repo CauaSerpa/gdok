@@ -7,11 +7,16 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['action'] === "register-coupon") {
         if (isset($_SESSION['user_id'])) {
             // Captura os dados do formulário
-            $user_id       = $_SESSION['user_id'];
-            $name          = $_POST['name'];
-            $validity      = $_POST['validity'];
-            $discount_type = $_POST['discount_type'];
-            $code          = $_POST['code'];
+            $user_id           = $_SESSION['user_id'];
+            $name              = $_POST['name'];
+            $validity_start    = $_POST['validity_start'];
+            $validity_end      = $_POST['validity_end'];
+            $discount_type     = $_POST['discount_type'];
+            $code              = $_POST['code'];
+            $accessibleModules = isset($_POST['accessibleModules']) ? $_POST['accessibleModules'] : [];
+
+            // Converte o array de módulos para JSON para armazenamento
+            $accessibleModulesJson = json_encode($accessibleModules);
 
             // Define o valor do desconto com base no tipo selecionado
             if ($discount_type === 'fixed') {
@@ -21,7 +26,10 @@
                 $discount_value = str_replace(',', '.', $price);
 
             } else {
-                $discount_value = $_POST['percent'];
+
+                $percent = trim($_POST['percent']);
+                $discount_value = str_replace(',', '.', $percent);
+
             }
 
             try {
@@ -53,10 +61,10 @@
                 // Insere os dados do cupom na tabela tb_coupons
                 $stmt = $conn->prepare("
                     INSERT INTO tb_coupons 
-                    (name, validity, discount_type, discount_value, code, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+                    (name, validity_start, validity_end, discount_type, discount_value, code, accessible_modules, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
                 ");
-                $stmt->execute([$name, $validity, $discount_type, $discount_value, $code]);
+                $stmt->execute([$name, $validity_start, $validity_end, $discount_type, $discount_value, $code, $accessibleModulesJson,]);
 
                 // Commit na transação
                 $conn->commit();
